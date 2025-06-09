@@ -93,7 +93,7 @@ class HelpView(discord.ui.View):
         self.categories: list[str] = [ name.capitalize() for name, cog in bot.cogs.items() if len([c for c in cog.walk_commands()]) ]
 
         self.add_item(discord.ui.Button(label='Website của bot Vocard', emoji='🌎', url='https://vocard.xyz'))
-        self.add_item(discord.ui.Button(label='Vocard Discord Server', emoji=':support:915152950471581696', url='https://discord.gg/WYDrzHt2uk'))
+        self.add_item(discord.ui.Button(label='Support Discord server', emoji=':support:915152950471581696', url='https://discord.gg/cKCKrvAD'))
         # self.add_item(discord.ui.Button(label='Github', emoji=':github:1098265017268322406', url='https://github.com/ChocoMeow/Vocard'))
         # self.add_item(discord.ui.Button(label='Donate', emoji=':patreon:913397909024800878', url='https://www.patreon.com/Vocard'))
         self.add_item(HelpDropdown(self.categories))

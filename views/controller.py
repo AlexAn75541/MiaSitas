@@ -171,7 +171,7 @@ class Stop(ControlButton):
 class Add(ControlButton):
     def __init__(self, **kwargs):
         super().__init__(
-            emoji="❤️",
+            emoji="Yêu thích ❤️",
             disabled=kwargs["player"].current is None,
             **kwargs
         )
@@ -513,7 +513,7 @@ class InteractiveController(discord.ui.View):
     async def on_error(self, interaction: discord.Interaction, error: Exception, item: discord.ui.Item):
         if isinstance(error, views.ButtonOnCooldown):
             sec = int(error.retry_after)
-            await interaction.response.send_message(f"You're on cooldown for {sec} second{'' if sec == 1 else 's'}!", ephemeral=True)
+            await interaction.response.send_message(f"Bạn đang ở cooldown trong {sec} giây{'' if sec == 1 else 's'}!", ephemeral=True)
         
         elif isinstance(error, Exception):
             await interaction.response.send_message(error)
