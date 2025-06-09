@@ -32,7 +32,7 @@ class Select_message(discord.ui.Select):
         options = [discord.SelectOption(label=f"{index}. {mail['title'][:50]}", description=mail['type'], emoji='✉️' if mail['type'] == 'invite' else '📢') for index, mail in enumerate(inbox, start=1) ]
 
         super().__init__(
-            placeholder="Select a message to view ..",
+            placeholder="Lựa chọn 1 tin nhắn để xem ..",
             options=options, custom_id='select'
         )
 
@@ -57,13 +57,13 @@ class InboxView(discord.ui.View):
 
     def build_embed(self) -> discord.Embed:
         embed=discord.Embed(
-            title=f"📭 All {self.author.display_name}'s Inbox",
-            description=f'Max Messages: {len(self.inbox)}/10' + '```%0s %2s %20s\n' % ("   ", "ID:", "Title:") + '\n'.join('%0s %2s. %35s'% ('✉️' if mail['type'] == 'invite' else '📢', index, mail['title'][:35] + "...") for index, mail in enumerate(self.inbox, start=1)) + '```',
+            title=f"📭 Tất cả inbox của {self.author.display_name}",
+            description=f'Số tin nhắn lớn nhất: {len(self.inbox)}/10' + '```%0s %2s %20s\n' % ("   ", "ID:", "Tiêu đề:") + '\n'.join('%0s %2s. %35s'% ('✉️' if mail['type'] == 'invite' else '📢', index, mail['title'][:35] + "...") for index, mail in enumerate(self.inbox, start=1)) + '```',
             color=func.settings.embed_color
         )
 
         if self.current:
-            embed.add_field(name="Message Info:", value=f"```{self.current['description']}\nSender ID: {self.current['sender']}\nPlaylist ID: {self.current['referId']}\nInvite Time: {time.strftime('%d-%m %H:%M:%S', time.gmtime(int(self.current['time'])))}```")
+            embed.add_field(name="Thông tin tin nhắn:", value=f"```{self.current['description']}\nID người gửi: {self.current['sender']}\nID của Playlist: {self.current['referId']}\nThời gian được mời: {time.strftime('%d-%m %H:%M:%S', time.gmtime(int(self.current['time'])))}```")
         return embed
     
     async def button_change(self, interaction: discord.Interaction):
@@ -86,20 +86,20 @@ class InboxView(discord.ui.View):
         except:
             pass
         
-    @discord.ui.button(label='Accept', style=discord.ButtonStyle.green, custom_id="accept", disabled=True)
+    @discord.ui.button(label='Chấp nhận', style=discord.ButtonStyle.green, custom_id="accept", disabled=True)
     async def accept_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.new_playlist.append(self.current)
         self.inbox.remove(self.current)
         self.current = None
         await self.button_change(interaction)
     
-    @discord.ui.button(label='Dismiss', style=discord.ButtonStyle.red, custom_id="dismiss", disabled=True)
+    @discord.ui.button(label='Bỏ qua', style=discord.ButtonStyle.red, custom_id="dismiss", disabled=True)
     async def dismiss_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.inbox.remove(self.current)
         self.current = None
         await self.button_change(interaction)
     
-    @discord.ui.button(label='Click Me To Save The Changes', style=discord.ButtonStyle.blurple)
+    @discord.ui.button(label='Bấm để lưu', style=discord.ButtonStyle.blurple)
     async def save_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self.response.edit(view=None) 
         self.stop()

@@ -144,6 +144,10 @@ class Vocard(commands.Bot):
             func.update_json("settings.json", new_data={"version": update.__version__})
             for locale_key, values in func.MISSING_TRANSLATOR.items():
                 func.logger.warning(f'Missing translation for "{", ".join(values)}" in "{locale_key}"')
+        
+        await self.tree.sync()
+    
+        func.logger.info("Commands synced successfully!")
 
     async def on_ready(self):
         func.logger.info("------------------")
@@ -193,7 +197,7 @@ class Vocard(commands.Bot):
 class CommandCheck(discord.app_commands.CommandTree):
     async def interaction_check(self, interaction: discord.Interaction, /) -> bool:
         if not interaction.guild:
-            await interaction.response.send_message("This command can only be used in guilds!")
+            await interaction.response.send_message("Lệnh này chỉ có thể sử dụng trong máy chủ Discord.")
             return False
 
         return True
