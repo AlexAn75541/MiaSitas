@@ -133,5 +133,14 @@
         "leave": ["stop", "bye"],
         "play": ["p"],
         "view": ["v"]
-    }
+    },
+    "features": {
+        "music": true,
+        "moderation": true,
+        "fun": true,
+        "utility": true
+    },
+    "disabled_commands": [],
+    "disabled_channels": [],
+    "version": "v2.7.1"
 }
