@@ -171,7 +171,8 @@ class Stop(ControlButton):
 class Add(ControlButton):
     def __init__(self, **kwargs):
         super().__init__(
-            emoji="Yêu thích ❤️",
+            emoji="❤️",
+            label='likeButton',
             disabled=kwargs["player"].current is None,
             **kwargs
         )

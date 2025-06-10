@@ -117,6 +117,7 @@
     "buttonForward": "Forward",
     "buttonRewind": "Rewind",
     "buttonLyrics": "Lyrics",
+    "likeButton": "Like",
 
     "nowplayingDesc": "**Now Playing:**\n```{0}```",
     "nowplayingField": "Up Next:",

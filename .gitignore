@@ -177,3 +177,15 @@ cython_debug/
 # Custom file
 settings.json
 logs
+.vscode/sftpshit.code-workspace
+.gitignore
+.vscode/sftp.json
+langs/UA.json
+langs/CH.json
+addons copy/__init__.py
+.settings.json.swp
+# Code Citations.md
+nohup.out
+# Code Citations.md
+addons copy/__init__.py
+views/help copy.py
