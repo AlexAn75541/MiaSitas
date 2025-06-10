@@ -1,7 +1,9 @@
-# MiaSitas Bot
-MiaSitas is a highly customizable Discord music bot forked from Vocard, designed to deliver a user-friendly experience. It offers support for a wide range of streaming platforms including Youtube, Soundcloud, Spotify, Twitch, and more.
+<a href="https://discord.gg/wRCgB7vBQv">
+    <img src="https://img.shields.io/discord/811542332678996008?color=7289DA&label=Support&logo=discord&style=for-the-badge" alt="Discord">
+</a>
 
-### Most of the feature below is taken directly from Vocard's main repo   
+# Vocard Bot
+Vocard is a highly customizable Discord music bot, designed to deliver a user-friendly experience. It offers support for a wide range of streaming platforms including Youtube, Soundcloud, Spotify, Twitch, and more.
 
 ## Features
 * Fast song loading

@@ -93,14 +93,14 @@ class ListView(discord.ui.View):
             return await interaction.response.edit_message(embed=await self.build_embed())
         await interaction.response.defer()
 
-    @discord.ui.button(label='Quay lại', style=discord.ButtonStyle.blurple)
+    @discord.ui.button(label='Back', style=discord.ButtonStyle.blurple)
     async def back_button(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         if self.current_page > 1:
             self.current_page -= 1
             return await interaction.response.edit_message(embed=await self.build_embed())
         await interaction.response.defer()
 
-    @discord.ui.button(label='Tiếp tục', style=discord.ButtonStyle.blurple)
+    @discord.ui.button(label='Next', style=discord.ButtonStyle.blurple)
     async def next_button(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         if self.current_page < self.page:
             self.current_page += 1

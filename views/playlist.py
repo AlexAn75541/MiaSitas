@@ -36,7 +36,7 @@ class Select_playlist(discord.ui.Select):
         self.view: PlaylistView
 
         super().__init__(
-            placeholder="Chọn một Playlist...",
+            placeholder="Select a playlist to view ..",
             custom_id="selector",
             options=[discord.SelectOption(emoji='🌎', label='All Playlist')] + 
                 [
@@ -46,7 +46,7 @@ class Select_playlist(discord.ui.Select):
         )
     
     async def callback(self, interaction: discord.Interaction) -> None:
-        if self.values[0] == 'Tất cả Playlist':
+        if self.values[0] == 'All Playlist':
             self.view.current = None
             self.view.toggle_btn(True)
             return await interaction.response.edit_message(embed=self.view.viewEmbed, view=self.view)
@@ -131,7 +131,7 @@ class PlaylistView(discord.ui.View):
             return await interaction.response.edit_message(embed=await self.build_embed())
         await interaction.response.defer()
 
-    @discord.ui.button(label='Quay lại', style=discord.ButtonStyle.blurple, disabled=True)
+    @discord.ui.button(label='Back', style=discord.ButtonStyle.blurple, disabled=True)
     async def back_button(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         if not self.current:
             return 
@@ -140,7 +140,7 @@ class PlaylistView(discord.ui.View):
             return await interaction.response.edit_message(embed=await self.build_embed())
         await interaction.response.defer()
 
-    @discord.ui.button(label='TIếp tục', style=discord.ButtonStyle.blurple, disabled=True)
+    @discord.ui.button(label='Next', style=discord.ButtonStyle.blurple, disabled=True)
     async def next_button(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         if not self.current:
             return 

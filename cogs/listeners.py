@@ -121,7 +121,7 @@ class Listeners(commands.Cog):
                 await asyncio.sleep(5)
 
             except Exception as e:
-                func.logger.error(f"Đã có lỗi trong lúc phát nhạc ở {channel_id}.", exc_info=e)
+                func.logger.error(f"Error encountered while restoring a player for channel ID {channel_id}.", exc_info=e)
 
         # Delete the last session file if it exists.
         try:
@@ -130,7 +130,7 @@ class Listeners(commands.Cog):
                 os.remove(file_path)
 
         except Exception as del_error:
-            func.logger.error("Thất bại loại bỏ file session: %s", file_path, exc_info=del_error)
+            func.logger.error("Failed to remove session file: %s", file_path, exc_info=del_error)
 
     @commands.Cog.listener()
     async def on_voicelink_track_end(self, player: voicelink.Player, track, _):
@@ -145,7 +145,7 @@ class Listeners(commands.Cog):
     async def on_voicelink_track_exception(self, player: voicelink.Player, track, error: dict):
         try:
             player._track_is_stuck = True
-            await player.context.send(f"{error['message']} Nhạc tiếp theo sẽ được phát sau 5 giây.", delete_after=10)
+            await player.context.send(f"{error['message']} The next song will begin in the next 5 seconds.", delete_after=10)
         except:
             pass
 

@@ -36,7 +36,7 @@ class Settings:
         self.mongodb_url: str = settings.get("mongodb_url")
         self.mongodb_name: str = settings.get("mongodb_name")
         
-        self.invite_link: str = "https://discord.gg/"
+        self.invite_link: str = "https://discord.gg/wRCgB7vBQv"
         self.nodes: Dict[str, Dict[str, Union[str, int, bool]]] = settings.get("nodes", {})
         self.max_queue: int = settings.get("default_max_queue", 1000)
         self.bot_prefix: str = settings.get("prefix", "")

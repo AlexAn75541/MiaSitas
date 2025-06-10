@@ -161,7 +161,7 @@ def truncate_string(text: str, length: int = 40) -> str:
     
 def get_lang_non_async(guild_id: int, *keys) -> Union[list[str], str]:
     settings = SETTINGS_BUFFER.get(guild_id, {})
-    lang = settings.get("lang", "VN")
+    lang = settings.get("lang", "EN")
     if lang in LANGS and not LANGS[lang]:
         LANGS[lang] = open_json(os.path.join("langs", f"{lang}.json"))
 
@@ -178,7 +178,7 @@ def format_bytes(bytes: int, unit: bool = False):
     
 async def get_lang(guild_id:int, *keys) -> Optional[Union[list[str], str]]:
     settings = await get_settings(guild_id)
-    lang = settings.get("lang", "VN")
+    lang = settings.get("lang", "EN")
     if lang in LANGS and not LANGS[lang]:
         LANGS[lang] = open_json(os.path.join("langs", f"{lang}.json"))
 
