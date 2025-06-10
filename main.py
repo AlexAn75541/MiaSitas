@@ -61,22 +61,95 @@ class Translator(discord.app_commands.Translator):
 class Vocard(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
+        
+        # Add additional attributes for multipurpose features
         self.ipc: IPCClient
+        self.uptime = discord.utils.utcnow()
+        self.command_uses = 0
+        self.error_counts = 0
+
+    async def setup_hook(self) -> None:
+        func.langs_setup()
+        
+        # Connecting to MongoDB
+        await self.connect_db()
+
+        # Set translator
+        await self.tree.set_translator(Translator())
+        
+        # Define core cog categories for better organization
+        cog_categories = {
+            'music': ['basic', 'effect', 'playlist'],
+            'moderation': ['settings'],
+            'utility': ['task'],
+            'general': []  # Add your general purpose cogs here
+        }
+        
+        # Loading all modules with category tracking
+        for module in os.listdir(func.ROOT_DIR + '/cogs'):
+            if module.endswith('.py'):
+                try:
+                    module_name = module[:-3]
+                    # Determine category for logging
+                    category = next((cat for cat, mods in cog_categories.items() 
+                                  if module_name in mods), 'misc')
+                    
+                    await self.load_extension(f"cogs.{module_name}")
+                    func.logger.info(f"Loaded {module_name} ({category} category)")
+                except Exception as e:
+                    func.logger.error(f"Failed to load {module_name} cog: {e}")
+
+        # Initialize IPC client if enabled
+        self.ipc = IPCClient(self, **func.settings.ipc_client)
+        if func.settings.ipc_client.get("enable", False):
+            try:
+                await self.ipc.connect()
+            except Exception as e:
+                func.logger.error(f"Dashboard connection failed: {e}")
+
+        # Sync commands and handle version updates
+        await self.sync_commands()
+
+    async def sync_commands(self):
+        """Synchronize commands and handle version updates"""
+        if not func.settings.version or func.settings.version != update.__version__:
+            await self.tree.sync()
+            func.update_json("settings.json", new_data={"version": update.__version__})
+            self.log_missing_translations()
+        await self.tree.sync()
+        func.logger.info("Commands synced successfully!")
+
+    def log_missing_translations(self):
+        """Log any missing translations"""
+        for locale_key, values in func.MISSING_TRANSLATOR.items():
+            func.logger.warning(f'Missing translations for "{", ".join(values)}" in "{locale_key}"')
 
     async def on_message(self, message: discord.Message, /) -> None:
         # Ignore messages from bots or DMs
         if message.author.bot or not message.guild:
             return False
 
-        # Check if the bot is directly mentioned
+        # Enhanced prefix handling
         if self.user.id in message.raw_mentions and not message.mention_everyone:
             prefix = await self.command_prefix(self, message)
-            if not prefix:
-                return await message.channel.send("I don't have a bot prefix set.")
-            await message.channel.send(f"My prefix is `{prefix}`")
+            embed = discord.Embed(
+                title="Bot Information",
+                description=f"**Prefix:** `{prefix or 'No prefix set'}`\n"
+                           f"**Help Command:** `{prefix}help`\n"
+                           f"**Support:** {func.settings.invite_link}",
+                color=func.settings.embed_color
+            )
+            return await message.channel.send(embed=embed)
 
-        # Fetch guild settings and check if the mesage is in the music request channel
+        # Handle music request channel
+        if await self.handle_music_request(message):
+            return
+
+        # Process regular commands
+        await self.process_commands(message)
+
+    async def handle_music_request(self, message: discord.Message) -> bool:
+        """Handle messages in music request channels"""
         settings = await func.get_settings(message.guild.id)
         if settings and (request_channel := settings.get("music_request_channel")):
             if message.channel.id == request_channel.get("text_channel_id"):
@@ -85,18 +158,15 @@ class Vocard(commands.Bot):
                     cmd = self.get_command("play")
                     if message.content:
                         await cmd(ctx, query=message.content)
-
                     elif message.attachments:
                         for attachment in message.attachments:
                             await cmd(ctx, query=attachment.url)
-                    
                 except Exception as e:
                     await func.send(ctx, str(e), ephemeral=True)
-                
                 finally:
-                    return await message.delete()
-            
-        await self.process_commands(message)
+                    await message.delete()
+                return True
+        return False
 
     async def connect_db(self) -> None:
         if not ((db_name := func.settings.mongodb_name) and (db_url := func.settings.mongodb_url)):
