@@ -8,7 +8,7 @@ on:
 
 permissions:
   packages: write
-  contents: read  # Add this permission for checkout
+  contents: read
 
 jobs:
   build:
@@ -17,15 +17,18 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
+    - name: Convert repository owner to lowercase
+      run: echo "REPO_OWNER=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+    
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ghcr.io/${{ github.repository_owner }}/miasitas:latest
+      run: docker build . --file Dockerfile --tag ghcr.io/${{ env.REPO_OWNER }}/miasitas:latest
       
     - name: Log in to GitHub Container Registry
-      uses: docker/login-action@v3  # Use the official Docker login action
+      uses: docker/login-action@v3
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Push the Docker image
-      run: docker push ghcr.io/${{ github.repository_owner }}/miasitas:latest
+      run: docker push ghcr.io/${{ env.REPO_OWNER }}/miasitas:latest
