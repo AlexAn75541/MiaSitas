@@ -375,14 +375,9 @@ class DebugView(discord.ui.View):
     
     @discord.ui.button(label="Re-Sync", emoji="🔄")
     async def sync(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.defer()
-        try:
-            # Clear and resync
-            self.bot.tree.clear_commands(guild=None)
-            await self.bot.tree.sync()
-            await interaction.followup.send("✅ All commands and hints have been resynced!", ephemeral=True)
-        except Exception as e:
-            await interaction.followup.send(f"❌ Failed to resync commands: {e}", ephemeral=True)
+        await interaction.response.send_message("🔄 Synchronizing all your commands and language settings!", ephemeral=True)
+        await self.bot.tree.sync()
+        await interaction.edit_original_response(content="✅ All commands and settings have been successfully synchronized!")
     
     @discord.ui.button(label="Nodes", emoji="📡")
     async def nodes(self, interaction: discord.Interaction, button: discord.ui.Button):

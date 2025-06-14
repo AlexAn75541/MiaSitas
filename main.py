@@ -77,28 +77,47 @@ class Vocard(commands.Bot):
         # Set translator
         await self.tree.set_translator(Translator())
         
-        # Force sync commands on startup
-        try:
-            await self.tree.sync()
-            func.logger.info("Initial command sync completed")
-        except Exception as e:
-            func.logger.error(f"Failed to sync commands on startup: {e}")
+        # Define core cog categories for better organization
+        cog_categories = {
+            'music': ['basic', 'effect', 'playlist'],
+            'moderation': ['settings'],
+            'utility': ['task'],
+            'general': []  # Add your general purpose cogs here
+        }
+        
+        # Loading all modules with category tracking
+        for module in os.listdir(func.ROOT_DIR + '/cogs'):
+            if module.endswith('.py'):
+                try:
+                    module_name = module[:-3]
+                    # Determine category for logging
+                    category = next((cat for cat, mods in cog_categories.items() 
+                                  if module_name in mods), 'misc')
+                    
+                    await self.load_extension(f"cogs.{module_name}")
+                    func.logger.info(f"Loaded {module_name} ({category} category)")
+                except Exception as e:
+                    func.logger.error(f"Failed to load {module_name} cog: {e}")
+
+        # Initialize IPC client if enabled
+        self.ipc = IPCClient(self, **func.settings.ipc_client)
+        if func.settings.ipc_client.get("enable", False):
+            try:
+                await self.ipc.connect()
+            except Exception as e:
+                func.logger.error(f"Dashboard connection failed: {e}")
+
+        # Sync commands and handle version updates
+        await self.sync_commands()
 
     async def sync_commands(self):
         """Synchronize commands and handle version updates"""
-        try:
-            # Force sync commands on every startup
+        if not func.settings.version or func.settings.version != update.__version__:
             await self.tree.sync()
-            # Clear command cache
-            self.tree.clear_commands(guild=None)
-            # Resync globally 
-            await self.tree.sync()
-            
             func.update_json("settings.json", new_data={"version": update.__version__})
             self.log_missing_translations()
-            func.logger.info("Commands synced successfully!")
-        except Exception as e:
-            func.logger.error(f"Failed to sync commands: {e}")
+        await self.tree.sync()
+        func.logger.info("Commands synced successfully!")
 
     def log_missing_translations(self):
         """Log any missing translations"""
