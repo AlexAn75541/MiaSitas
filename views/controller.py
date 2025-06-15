@@ -97,6 +97,7 @@ class Resume(ControlButton):
         )
     
     async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()  # Immediately defer for snappy UX
         is_paused = not self.player.is_paused
         vote_type = "pause" if is_paused else "resume"
         votes = getattr(self.player, f"{vote_type}_votes")
@@ -115,7 +116,7 @@ class Resume(ControlButton):
         if not self.disable_button_text:
             self.label = await func.get_lang(interaction.guild.id, button)
         await self.player.set_pause(is_paused, interaction.user)
-        await interaction.response.edit_message(view=self.view)
+        await interaction.edit_original_response(view=self.view)
 
 class Skip(ControlButton):
     def __init__(self, **kwargs):
@@ -478,7 +479,6 @@ BUTTON_COLORS: Dict[str, discord.ButtonStyle] = {
 class InteractiveController(discord.ui.View):
     def __init__(self, player):
         super().__init__(timeout=None)
-
         self.player: voicelink.Player = player
         for row, btnRow in enumerate(func.settings.controller.get("default_buttons")):
             for btn in btnRow:
@@ -491,17 +491,15 @@ class InteractiveController(discord.ui.View):
                 if not btnClass or (self.player.queue.is_empty and btn == "tracks"):
                     continue
                 self.add_item(btnClass(player=player, style=style, row=row))
+        # Reduce cooldown for snappier UX
+        self.cooldown = commands.CooldownMapping.from_cooldown(1.0, 3.0, key)
 
-        self.cooldown = commands.CooldownMapping.from_cooldown(2.0, 10.0, key)
-            
     async def interaction_check(self, interaction: discord.Interaction):
         if not self.player.node._available:
             await func.send(interaction, "nodeReconnect", ephemeral=True)
             return False
-
         if interaction.user.id in func.settings.bot_access_user:
             return True
-            
         if self.player.channel and self.player.is_user_join(interaction.user):
             retry_after = self.cooldown.update_rate_limit(interaction)
             if retry_after:
