@@ -69,36 +69,106 @@ class Vocard(commands.Bot):
         self.error_counts = 0
 
     async def setup_hook(self) -> None:
+        func.logger.info("Starting bot setup...")
+
+        # Initialize language system
         func.langs_setup()
-        
-        # Connecting to MongoDB
+        func.logger.info("✓ Language system initialized")
+
+        # Connect to MongoDB
         await self.connect_db()
 
-        # Set translator
+        # Set translator and clear commands
         await self.tree.set_translator(Translator())
-        
-        # Force sync commands on startup
+        self.tree.clear_commands(guild=None)
+        func.logger.info("✓ Translator configured and commands cleared")
+
+        # Load cogs with detailed logging
+        cog_categories = {
+            'music': ['basic', 'effect', 'playlist', 'listeners'],
+            'utilities': ['general', 'settings']
+        }
+
+        total_cogs = sum(len(cogs) for cogs in cog_categories.values())
+        loaded_cogs = 0
+
+        # Load all cogs first
+        for category, cogs in cog_categories.items():
+            for cog in cogs:
+                try:
+                    await self.load_extension(f"cogs.{category}.{cog}")
+                    loaded_cogs += 1
+                    func.logger.info(f"✓ [{loaded_cogs}/{total_cogs}] Loaded {cog} from {category}")
+                except Exception as e:
+                    func.logger.error(f"✗ Failed to load {cog} from {category}: {e}")
+
+        # Force sync commands
         try:
-            await self.tree.sync()
-            func.logger.info("Initial command sync completed")
+            func.logger.info("Syncing commands globally...")
+            synced = await self.tree.sync()
+            func.logger.info(f"✓ Synced {len(synced)} commands globally")
+            
+            # Log registered commands
+            for cmd in synced:
+                func.logger.info(f"Registered command: /{cmd.name}")
+                
+            # Verify command registration
+            if not synced:
+                func.logger.warning("No commands were synced! Check cog implementations.")
+                
         except Exception as e:
-            func.logger.error(f"Failed to sync commands on startup: {e}")
+            func.logger.error(f"Failed to sync commands: {e}", exc_info=True)
+
+    async def on_guild_join(self, guild: discord.Guild):
+        """Sync commands when joining new guild"""
+        try:
+            await self.tree.sync(guild=guild)
+            func.logger.info(f"Synced commands for new guild: {guild.name} ({guild.id})")
+        except Exception as e:
+            func.logger.error(f"Failed to sync commands for guild {guild.id}: {e}")
+
+    async def verify_commands(self):
+        """Verify command registration status"""
+        try:
+            commands = await self.tree.fetch_commands()
+            func.logger.info(f"Verified {len(commands)} global commands registered")
+            return len(commands) > 0
+        except Exception as e:
+            func.logger.error(f"Failed to verify commands: {e}")
+            return False
 
     async def sync_commands(self):
-        """Synchronize commands and handle version updates"""
+        """Synchronize commands with detailed logging"""
         try:
-            # Force sync commands on every startup
-            await self.tree.sync()
-            # Clear command cache
+            func.logger.info("Starting command sync process...")
+        
+            # Step 1: Clear existing commands
+            func.logger.debug("Clearing existing commands...")
             self.tree.clear_commands(guild=None)
-            # Resync globally 
-            await self.tree.sync()
-            
+            func.logger.info("✓ Cleared all existing commands")
+
+            # Step 2: Copy commands to sync
+            commands_to_sync = self.tree._global_commands.copy()
+            func.logger.debug(f"Found {len(commands_to_sync)} commands to sync")
+        
+            # Step 3: Sync globally
+            func.logger.debug("Starting global sync...")
+            synced = await self.tree.sync()
+            func.logger.info(f"✓ Synced {len(synced)} commands globally")
+
+            # Step 4: Detailed command logging
+            for cmd in synced:
+                func.logger.debug(f"Registered command: /{cmd.name} - {cmd.description}")
+
+            # Step 5: Update version info
             func.update_json("settings.json", new_data={"version": update.__version__})
-            self.log_missing_translations()
-            func.logger.info("Commands synced successfully!")
+            func.logger.info("✓ Updated bot version in settings")
+        
+            return len(synced)
+
         except Exception as e:
-            func.logger.error(f"Failed to sync commands: {e}")
+            func.logger.error(f"Command sync failed: {e}", exc_info=True)
+            return 0
 
     def log_missing_translations(self):
         """Log any missing translations"""
@@ -165,49 +235,14 @@ class Vocard(commands.Bot):
         func.SETTINGS_DB = func.MONGO_DB[db_name]["Settings"]
         func.USERS_DB = func.MONGO_DB[db_name]["Users"]
 
-    async def setup_hook(self) -> None:
-        func.langs_setup()
-        
-        # Connecting to MongoDB
-        await self.connect_db()
-
-        # Set translator
-        await self.tree.set_translator(Translator())
-        
-        # Loading all the module in `cogs` folder
-        for module in os.listdir(func.ROOT_DIR + '/cogs'):
-            if module.endswith('.py'):
-                try:
-                    await self.load_extension(f"cogs.{module[:-3]}")
-                    func.logger.info(f"Loaded {module[:-3]}")
-                except Exception as e:
-                    func.logger.error(f"Something went wrong while loading {module[:-3]} cog.", exc_info=e)
-
-        self.ipc = IPCClient(self, **func.settings.ipc_client)
-        if func.settings.ipc_client.get("enable", False):
-            try:
-                await self.ipc.connect()
-            except Exception as e:
-                func.logger.error(f"Cannot connected to dashboard! - Reason: {e}")
-
-        if not func.settings.version or func.settings.version != update.__version__:
-            await self.tree.sync()
-            func.update_json("settings.json", new_data={"version": update.__version__})
-            for locale_key, values in func.MISSING_TRANSLATOR.items():
-                func.logger.warning(f'Missing translation for "{", ".join(values)}" in "{locale_key}"')
-        
-        await self.tree.sync()
-    
-        func.logger.info("Commands synced successfully!")
-
     async def on_ready(self):
-        func.logger.info("------------------")
-        func.logger.info(f"Logging As {self.user}")
+        func.logger.info("------------------------")
+        func.logger.info(f"Đăng nhập với tên người dùng {self.user}")
         func.logger.info(f"Bot ID: {self.user.id}")
-        func.logger.info("------------------")
+        func.logger.info("------------------------")
         func.logger.info(f"Discord Version: {discord.__version__}")
         func.logger.info(f"Python Version: {sys.version}")
-        func.logger.info("------------------")
+        func.logger.info("------------------------")
 
         func.settings.client_id = self.user.id
         func.LOCAL_LANGS.clear()
@@ -300,3 +335,7 @@ bot = Vocard(
 if __name__ == "__main__":
     update.check_version(with_msg=True)
     bot.run(func.settings.token, root_logger=True)
+    
+    # Verify commands after bot is ready
+    if not asyncio.run(bot.verify_commands()):
+        func.logger.warning("No commands verified! Bot may not work as expected.")

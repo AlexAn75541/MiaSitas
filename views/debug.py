@@ -295,7 +295,7 @@ class NodesPanel(discord.ui.View):
                         value=f"```• ADDRESS: {node._host}:{node._port}\n" \
                             f"• PLAYERS: {len(node._players)}\n" \
                             f"• CPU:     {node.stats.cpu_process_load:.1f}%\n" \
-                            f"• RAM:     {func.format_bytes(node.stats.free)}/{func.format_bytes(total_memory, True)} ({(node.stats.free/total_memory) * 100:.1f}%)\n"
+                            f"• RAM:     {func.format_bytes(node.stats.free)}/{func.format_bytes(total_memory, True)} ({(node.stats.free/total_memory) * 100:.1f}%)\n" \
                             f"• LATENCY: {node.latency:.2f}ms\n" \
                             f"• UPTIME:  {func.time(node.stats.uptime)}```"
                     )

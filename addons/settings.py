@@ -52,3 +52,4 @@ class Settings:
         self.lyrics_platform: str = settings.get("lyrics_platform", "A_ZLyrics").lower()
         self.ipc_client: Dict[str, Union[str, bool, int]] = settings.get("ipc_client", {})
         self.version: str = settings.get("version", "")
+        self.debug_guilds: List[int] = settings.get("debug_guilds", [])
