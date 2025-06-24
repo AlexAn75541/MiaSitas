@@ -190,3 +190,4 @@ nohup.out
 addons copy/__init__.py
 views/help copy.py
 TODO
+.DS_Store
