@@ -47,7 +47,7 @@ from discord.ext import commands
 from . import events
 from .enums import SearchType, LoopType, RequestMethod
 from .events import VoicelinkEvent, TrackEndEvent, TrackStartEvent, TrackExceptionEvent
-from .exceptions import VoicelinkException, FilterInvalidArgument, TrackInvalidPosition, FilterTagAlreadyInUse, DuplicateTrack
+from .exceptions import VoicelinkException, NodeException, FilterInvalidArgument, TrackInvalidPosition, FilterTagAlreadyInUse, DuplicateTrack
 from .filters import Filter, Filters
 from .objects import Track, Playlist
 from .pool import Node, NodePool
@@ -415,8 +415,23 @@ class Player(VoiceProtocol):
         else:
             try:
                 await self.play(track, start=track.position)
+            except NodeException as e:
+                # Handle Lavalink REST API errors specifically
+                self._logger.error(f"Lavalink API error while playing track '{track.title}' in {self.guild.name}({self.guild.id}): {e}")
+                # For API errors, we might want to skip the track instead of retrying immediately
+                if "Session not found" in str(e) or "404" in str(e):
+                    self._logger.warning(f"Session issue detected, attempting to reconnect node for {self.guild.name}({self.guild.id})")
+                    # Try to change to a different node or reconnect
+                    try:
+                        await self.change_node()
+                    except Exception as reconnect_error:
+                        self._logger.error(f"Failed to reconnect node for {self.guild.name}({self.guild.id}): {reconnect_error}")
+                        await sleep(10)  # Wait longer before retrying
+                else:
+                    await sleep(5)
+                return await self.do_next()
             except Exception as e:
-                self._logger.error(f"Something went wrong while playing music in {self.guild.name}({self.guild.id})", exc_info=e)
+                self._logger.error(f"Unexpected error while playing track '{track.title}' in {self.guild.name}({self.guild.id})", exc_info=e)
                 await sleep(5)
                 return await self.do_next()
 
