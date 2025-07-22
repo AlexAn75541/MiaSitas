@@ -249,7 +249,7 @@ class Node:
     async def send(self, method: RequestMethod, query: str, data: Union[dict, str] = {}) -> dict:
         if not self._available:
             raise NodeNotAvailable(f"The node '{self._identifier}' is unavailable.")
-        
+
         uri: str = f"{self._rest_uri}/{NODE_VERSION}/{query}"
         async with self._session.request(
             method=method.value,
@@ -258,8 +258,27 @@ class Node:
             json=data
         ) as resp:
             if resp.status >= 300:
-                raise NodeException(f"Getting errors from Lavalink REST api")
-            
+                # Try to get detailed error information from the response
+                try:
+                    error_data = await resp.json()
+                    error_message = error_data.get("message", "Unknown error")
+                    error_status = error_data.get("status", resp.status)
+                    error_type = error_data.get("error", "Unknown")
+
+                    detailed_error = f"Lavalink REST API error [{error_status}] {error_type}: {error_message}"
+                    self._logger.error(f"Node [{self._identifier}] REST API error: {detailed_error}")
+                    self._logger.debug(f"Request details - Method: {method.value}, URI: {uri}, Data: {data}")
+
+                    raise NodeException(detailed_error)
+                except Exception:
+                    # Fallback if we can't parse the JSON error response
+                    error_text = await resp.text()
+                    fallback_error = f"Lavalink REST API error [{resp.status}]: {error_text or 'No error details available'}"
+                    self._logger.error(f"Node [{self._identifier}] REST API error: {fallback_error}")
+                    self._logger.debug(f"Request details - Method: {method.value}, URI: {uri}, Data: {data}")
+
+                    raise NodeException(fallback_error)
+
             if method == RequestMethod.DELETE:
                 return await resp.json(content_type=None)
 
@@ -407,7 +426,7 @@ class Node:
     async def update_refresh_yt_access_token(self, token: YTToken) -> dict:
         if not self._available:
             raise NodeNotAvailable(f"The node '{self._identifier}' is unavailable.")
-        
+
         uri: str = f"{self._rest_uri}/youtube"
         async with self._session.request(
             method="POST",
@@ -416,7 +435,26 @@ class Node:
             json={"refreshToken": token.token}
         ) as resp:
             if resp.status >= 300:
-                raise NodeException(f"Getting errors from Lavalink REST api")
+                # Try to get detailed error information from the response
+                try:
+                    error_data = await resp.json()
+                    error_message = error_data.get("message", "Unknown error")
+                    error_status = error_data.get("status", resp.status)
+                    error_type = error_data.get("error", "Unknown")
+
+                    detailed_error = f"Lavalink YouTube token refresh error [{error_status}] {error_type}: {error_message}"
+                    self._logger.error(f"Node [{self._identifier}] YouTube token refresh error: {detailed_error}")
+
+                    raise NodeException(detailed_error)
+                except Exception:
+                    # Fallback if we can't parse the JSON error response
+                    error_text = await resp.text()
+                    fallback_error = f"Lavalink YouTube token refresh error [{resp.status}]: {error_text or 'No error details available'}"
+                    self._logger.error(f"Node [{self._identifier}] YouTube token refresh error: {fallback_error}")
+
+                    raise NodeException(fallback_error)
+
+            return await resp.json()
 
 class NodePool:
     """The base class for the node pool.
