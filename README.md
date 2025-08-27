@@ -27,7 +27,7 @@ MiaSitas is a highly customizable Discord music bot forked from Vocard, designed
 * [Lavalink Server (Requires 4.0.0+)](https://github.com/freyacodes/Lavalink)
 
 ## Setup
-Please see the [Setup Page](https://docs.vocard.xyz) in the docs to run this bot yourself!
+Please see the [Setup Page](https://docs.vocard.xyz/latest/bot/setup) in the docs to run this bot yourself!
 
 ## Need Help?
 Join the [Vocard Support Discord](https://discord.gg/wRCgB7vBQv) for help or questions.

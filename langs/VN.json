@@ -2,7 +2,6 @@
     "unknownException": "⚠️ Đã xảy ra lỗi khi chạy lệnh! Vui lòng thử lại sau hoặc liên hệ `aretzera` để được hỗ trợ thêm.",
     "enabled": "đã bật",
     "disabled": "đã tắt",
-
     "nodeReconnect": "Vui lòng thử lại! Sau khi node kết nối lại.",
     "noChannel": "Không có kênh voice để kết nối. Vui lòng cung cấp một kênh hoặc tham gia một kênh.",
     "alreadyConnected": "Đã kết nối với kênh voice.",
@@ -16,6 +15,7 @@
     "changedLanguage": "Đã thay đổi thành công sang gói ngôn ngữ `{0}`.",
     "setPrefix": "Hoàn thành! Tiền tố của tôi trong máy chủ của bạn bây giờ là `{0}`. Thử chạy `{1}ping` để kiểm tra.",
     "setDJ": "Đặt DJ thành {0}.",
+<<<<<<< HEAD
     "setqueue": "Đặt chế độ hàng đợi thành `{0}`.",
     "247": "Chế độ 24/7 bây giờ là `{0}`.",
     "bypassVote": "Bạn có hệ thống bình chọn `{0}`.",
@@ -23,6 +23,16 @@
     "togglecontroller": "Bây giờ bạn đã `{0}` bộ điều khiển nhạc.",
     "toggleDuplicateTrack": "Bây giờ bạn đã `{0}` tính năng ngăn chặn bài hát trùng lặp.",
     "toggleControllerMsg": "Bây giờ bạn đã `{0}` tin nhắn từ bộ điều khiển nhạc.",
+=======
+    "setQueue": "Đặt chế độ hàng đợi thành `{0}`.",
+    "247": "Chế độ 24/7 bây giờ là `{0}`.",
+    "bypassVote": "Bạn có hệ thống bình chọn `{0}`.",
+    "setVolume": "Đặt âm lượng thành `{0}`%",
+    "toggleController": "Bây giờ bạn đã `{0}` bộ điều khiển nhạc.",
+    "toggleDuplicateTrack": "Bây giờ bạn đã `{0}` tính năng ngăn chặn bài hát trùng lặp.",
+    "toggleControllerMsg": "Bây giờ bạn đã `{0}` tin nhắn từ bộ điều khiển nhạc.",
+    "toggleSilentMsg": "Bạn có {0} tin nhắn im lặng.",
+>>>>>>> origin/og-main
     "settingsMenu": "Cài Đặt Máy Chủ | {0}",
     "settingsTitle": "❤️ Thông Tin Cơ Bản:",
     "settingsValue": "```Tiền tố: {0}\nNgôn ngữ: {1}\nBộ Điều Khiển Nhạc: {2}\nVai Trò DJ: @{3}\nBỏ Qua Bình Chọn: {4}\n24/7: {5}\nÂm Lượng Mặc Định: {6}%\nThời Gian Phát: {7}```",
@@ -33,12 +43,20 @@
     "settingsPermValue": "```{0} Quản Trị Viên\n{1} Quản_Lý_Guild\n{2} Quản_Lý_Kênh\n{3} Quản_Lý_Tin_Nhắn```",
     "pingTitle1": "Thông Tin Bot:",
     "pingTitle2": "Thông Tin Trình Phát:",
+<<<<<<< HEAD
     "pingfield1": "```ID Shard: {0}/{1}\nĐộ Trễ Shard: {2:.3f}s {3}\nKhu Vực: {4}```",
     "pingfield2": "```Node: {0} - {1:.3f}s\nTrình Phát: {2}\nKhu Vực Voice: {3}```",
     "addEffect": "Đã áp dụng hiệu ứng `{0}`.",
     "clearEffect": "Các hiệu ứng âm thanh đã được xóa!",
     "FilterTagAlreadyInUse": "Hiệu ứng âm thanh này đã được sử dụng! Vui lòng sử dụng /cleareffect <Tag> để xóa nó.",
 
+=======
+    "pingField1": "```ID Shard: {0}/{1}\nĐộ Trễ Shard: {2:.3f}s {3}\nKhu Vực: {4}```",
+    "pingField2": "```Node: {0} - {1:.3f}s\nTrình Phát: {2}\nKhu Vực Voice: {3}```",
+    "addEffect": "Đã áp dụng hiệu ứng `{0}`.",
+    "clearEffect": "Các hiệu ứng âm thanh đã được xóa!",
+    "filterTagAlreadyInUse": "Hiệu ứng âm thanh này đã được sử dụng! Vui lòng sử dụng /cleareffect <Tag> để xóa nó.",
+>>>>>>> origin/og-main
     "playlistViewTitle": "📜 Tất Cả Playlist Của {0}",
     "playlistViewHeaders": "ID:,Thời Gian:,Tên:,Bài Hát:",
     "playlistFooter": "Gõ /playlist play [playlist] để thêm playlist vào hàng đợi.",
@@ -77,21 +95,33 @@
     "inboxFull": "Xin lỗi! Hộp thư của {0} đã đầy.",
     "inboxNoMsg": "Không có tin nhắn nào trong hộp thư của bạn.",
     "invitationSent": "Đã gửi lời mời đến {0}.",
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/og-main
     "notInChannel": "{0}, bạn phải ở trong {1} để sử dụng lệnh voice. Vui lòng tham gia lại nếu bạn đang ở trong voice!",
     "noTrackPlaying": "Hiện tại không có bài hát nào đang phát",
     "noTrackFound": "Không tìm thấy bài hát nào với truy vấn đó! Vui lòng cung cấp url hợp lệ.",
     "noLinkSupport": "Lệnh tìm kiếm không hỗ trợ liên kết!",
     "voted": "Bạn đã bình chọn!",
+<<<<<<< HEAD
     "missingPerms_pos": "Chỉ DJ hoặc quản trị viên mới có thể thay đổi vị trí.",
     "missingPerms_mode": "Chỉ DJ hoặc quản trị viên mới có thể chuyển chế độ lặp.",
     "missingPerms_queue": "Chỉ DJ hoặc quản trị viên mới có thể xóa bài hát khỏi hàng đợi.",
     "missingPerms_autoplay": "Chỉ DJ hoặc quản trị viên mới có thể bật hoặc tắt chế độ tự động phát!",
     "missingPerms_function": "Chỉ DJ hoặc Admin mới có thể sử dụng chức năng này.",
+=======
+    "missingPosPerm": "Chỉ DJ hoặc quản trị viên mới có thể thay đổi vị trí.",
+    "missingModePerm": "Chỉ DJ hoặc quản trị viên mới có thể chuyển chế độ lặp.",
+    "missingQueuePerm": "Chỉ DJ hoặc quản trị viên mới có thể xóa bài hát khỏi hàng đợi.",
+    "missingAutoPlayPerm": "Chỉ DJ hoặc quản trị viên mới có thể bật hoặc tắt chế độ tự động phát!",
+    "missingFunctionPerm": "Chỉ DJ hoặc Admin mới có thể sử dụng chức năng này.",
+>>>>>>> origin/og-main
     "timeFormatError": "Định dạng thời gian không chính xác. Ví dụ: 2:42 hoặc 12:39:31",
     "lyricsNotFound": "Không tìm thấy lời bài hát. Gõ /lyrics <Tên Bài Hát> <Tác Giả> để tìm lời bài hát.",
     "missingTrackInfo": "Một số chi tiết bài hát bị thiếu.",
     "noVoiceChannel": "Không Tìm Thấy Kênh Voice!",
+<<<<<<< HEAD
 
     "playlistAddError": "Bạn không được phép thêm video trực tiếp vào playlist của mình!",
     "playlistAddError2": "Đã xảy ra sự cố khi thêm bài hát vào playlist!",
@@ -102,6 +132,15 @@
     "playerDropdown": "Chọn một bài hát để bỏ qua đến ...",
     "playerFilter": "Chọn một bộ lọc để áp dụng ...",
 
+=======
+    "playlistAddError": "Bạn không được phép thêm video trực tiếp vào playlist của mình!",
+    "playlistAddError2": "Đã xảy ra sự cố khi thêm bài hát vào playlist!",
+    "playlistLimited": "Bạn đã đạt giới hạn! Bạn chỉ có thể thêm {0} bài hát vào playlist của mình.",
+    "playlistRepeated": "Bài hát này đã có trong playlist của bạn!",
+    "playlistAdded": "❤️ Đã thêm **{0}** vào playlist [`{2}`] của {1}!",
+    "playerDropdown": "Chọn một bài hát để bỏ qua đến ...",
+    "playerFilter": "Chọn một bộ lọc để áp dụng ...",
+>>>>>>> origin/og-main
     "buttonBack": "Quay Lại",
     "buttonPause": "Tạm Dừng",
     "buttonResume": "Tiếp Tục",
@@ -117,6 +156,7 @@
     "buttonForward": "Tua Tới",
     "buttonRewind": "Tua Lùi",
     "buttonLyrics": "Lời Bài Hát",
+<<<<<<< HEAD
     "likeButton": "Yêu thích",
 
     "nowplayingDesc": "**Đang Phát:**\n```{0}```",
@@ -125,23 +165,38 @@
 
     "connect": "Đã kết nối với {0}",
 
+=======
+    "nowplayingDesc": "**Đang Phát:**\n```{0}```",
+    "nowplayingField": "Tiếp Theo:",
+    "nowplayingLink": "Nghe trên {0}",
+    "connect": "Đã kết nối với {0}",
+>>>>>>> origin/og-main
     "live": "TRỰC TIẾP",
     "playlistLoad": " 🎶 Đã thêm playlist **{0}** với `{1}` bài hát vào hàng đợi.",
     "trackLoad": "Đã thêm **[{0}](<{1}>)** bởi **{2}** (`{3}`) để bắt đầu phát.\n",
     "trackLoad_pos": "Đã thêm **[{0}](<{1}>)** bởi **{2}** (`{3}`) vào hàng đợi ở vị trí **{4}**\n",
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/og-main
     "searchTitle": "Truy Vấn Tìm Kiếm: {0}",
     "searchDesc": "➥ Nền tảng: {0} **{1}**\n➥ Kết quả: **{2}**\n\n{3}",
     "searchWait": "Chọn bài hát bạn muốn thêm vào hàng đợi.",
     "searchTimeout": "Tìm kiếm hết thời gian. Vui lòng thử lại sau.",
     "searchSuccess": "Đã thêm bài hát vào hàng đợi.",
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/og-main
     "queueTitle": "Hàng Đợi Sắp Tới:",
     "historyTitle": "Lịch Sử Hàng Đợi:",
     "viewTitle": "Hàng Đợi Nhạc",
     "viewDesc": "**Đang Phát: [Nhấp Vào Đây]({0}) ⮯**\n{1}",
     "viewFooter": "Trang: {0}/{1} | Tổng Thời Lượng: {2}",
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/og-main
     "pauseError": "Trình phát đã được tạm dừng.",
     "pauseVote": "{0} đã bình chọn tạm dừng bài hát. [{1}/{2}]",
     "paused": "`{0}` đã tạm dừng trình phát.",
@@ -154,6 +209,7 @@
     "skipError": "Không có bài hát nào để bỏ qua.",
     "skipVote": "{0} đã bình chọn bỏ qua bài hát. [{1}/{2}]",
     "skipped": "`{0}` đã bỏ qua bài hát.",
+<<<<<<< HEAD
 
     "backVote": "{0} đã bình chọn quay lại bài hát trước. [{1}/{2}]",
     "backed": "`{0}` đang quay lại bài hát trước.",
@@ -161,6 +217,12 @@
     "leaveVote": "{0} đã bình chọn dừng trình phát. [{1}/{2}]",
     "left": "`{0}` đã dừng trình phát.",
 
+=======
+    "backVote": "{0} đã bình chọn quay lại bài hát trước. [{1}/{2}]",
+    "backed": "`{0}` đang quay lại bài hát trước.",
+    "leaveVote": "{0} đã bình chọn dừng trình phát. [{1}/{2}]",
+    "left": "`{0}` đã dừng trình phát.",
+>>>>>>> origin/og-main
     "seek": "Đặt trình phát thành **{0}**",
     "repeat": "Chế độ lặp lại đã được đặt thành `{0}`",
     "cleared": "Đã xóa tất cả bài hát trong `{0}`",
@@ -171,6 +233,7 @@
     "swapped": "`{0}` và `{1}` đã được hoán đổi",
     "moved": "Đã di chuyển `{0}` đến `{1}`",
     "autoplay": "Chế độ tự động phát bây giờ là **{0}**",
+<<<<<<< HEAD
 
     "notdj": "Bạn không phải là DJ. DJ hiện tại là {0}.",
     "djToMe": "Bạn không thể chuyển vai trò DJ cho chính mình hoặc một bot.",
@@ -190,6 +253,19 @@
     "invalidEndTime": "Thời gian kết thúc không hợp lệ, phải nằm giữa `00:00` và `{0}`",
     "invalidTimeOrder": "Thời gian kết thúc không thể nhỏ hơn hoặc bằng thời gian bắt đầu",
 
+=======
+    "notdj": "Bạn không phải là DJ. DJ hiện tại là {0}.",
+    "djToMe": "Bạn không thể chuyển vai trò DJ cho chính mình hoặc một bot.",
+    "djNotInChannel": "`{0}` không ở trong kênh voice.",
+    "djswap": "Bạn đã chuyển vai trò DJ cho `{0}`.",
+    "voicelinkQueueFull": "Xin lỗi, bạn đã đạt tối đa `{0}` bài hát trong hàng đợi!",
+    "voicelinkOutofList": "Vui lòng cung cấp chỉ số bài hát hợp lệ!",
+    "voicelinkDuplicateTrack": "Xin lỗi, bài hát này đã có trong hàng đợi.",
+    "decodeError": "Đã xảy ra lỗi khi giải mã tệp!",
+    "invalidStartTime": "Thời gian bắt đầu không hợp lệ, phải nằm giữa `00:00` và `{0}`",
+    "invalidEndTime": "Thời gian kết thúc không hợp lệ, phải nằm giữa `00:00` và `{0}`",
+    "invalidTimeOrder": "Thời gian kết thúc không thể nhỏ hơn hoặc bằng thời gian bắt đầu",
+>>>>>>> origin/og-main
     "setStageAnnounceTemplate": "Hoàn thành! Từ bây giờ, trạng thái voice như cái bạn đang ở sẽ được đặt tên theo mẫu của bạn. Bạn sẽ thấy nó cập nhật trong vài giây.",
     "createSongRequestChannel": "Một kênh yêu cầu bài hát ({0}) đã được tạo! Bạn có thể bắt đầu yêu cầu bất kỳ bài hát nào bằng tên hoặc URL trong kênh đó, mà không cần sử dụng tiền tố bot."
 }
