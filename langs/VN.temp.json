@@ -1,0 +1,13 @@
+{
+    "unknownException": "⚠️ Đã xảy ra lỗi khi chạy lệnh! Vui lòng thử lại sau hoặc liên hệ `aretzera` để được hỗ trợ thêm.",
+    "enabled": "đã bật",
+    "disabled": "đã tắt",
+    "nodeReconnect": "Vui lòng thử lại! Sau khi node kết nối lại.",
+    "noChannel": "Không có kênh voice để kết nối. Vui lòng cung cấp một kênh hoặc tham gia một kênh.",
+    "alreadyConnected": "Đã kết nối với kênh voice.",
+    "noPermission": "Xin lỗi! Tôi không có quyền tham gia hoặc nói trong kênh voice của bạn.",
+    "noCreatePermission": "Xin lỗi! Tôi không có quyền tạo kênh yêu cầu bài hát.",
+    "noPlaySource": "Không thể tìm thấy nguồn phát nào!",
+    "noPlayer": "Không tìm thấy trình phát nào trên máy chủ này.",
+    "notVote": "Lệnh này yêu cầu bạn bình chọn! Gõ `/vote` để biết thêm thông tin."
+}
