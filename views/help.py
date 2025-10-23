@@ -27,25 +27,60 @@ from discord.ext import commands
 import function as func
 
 class HelpDropdown(discord.ui.Select):
-    def __init__(self, categories:list):
-        self.view: HelpView
+    def __init__(self, categories: list):
+        self.categories = categories  # Store categories for later use
+
+        options = [
+            discord.SelectOption(
+                emoji="🆕",
+                label="Thông tin",
+                description="Xem thông tin của bot MiaSitas(Vocard Fork)"
+            ),
+            discord.SelectOption(
+                emoji="🕹️",
+                label="Hướng dẫn",
+                description="Cách để sử dụng bot."
+            ),
+        ]
+
+        # Add command categories
+        for category, emoji in zip(categories, ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣"]):
+            options.append(
+                discord.SelectOption(
+                    emoji=emoji,
+                    label=f"Các lệnh {category}",
+                    description=f"Đây là mục chứa những lệnh {category.lower()}"
+                )
+            )
 
         super().__init__(
-            placeholder="Select Category!",
-            min_values=1, max_values=1,
-            options=[
-                discord.SelectOption(emoji="🆕", label="News", description="View new updates of Vocard."),
-                discord.SelectOption(emoji="🕹️", label="Tutorial", description="How to use Vocard."),
-            ] + [
-                discord.SelectOption(emoji=emoji, label=f"{category} Commands", description=f"This is {category.lower()} Category.")
-                for category, emoji in zip(categories, ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣"])
-            ],
+            placeholder="Chọn một mục nào đó...",
+            min_values=1,
+            max_values=1,
+            options=options,
             custom_id="select"
         )
     
     async def callback(self, interaction: discord.Interaction) -> None:
-        embed = self.view.build_embed(self.values[0].split(" ")[0])
-        await interaction.response.edit_message(embed=embed)
+        if not interaction.user == self.view.author:
+            await interaction.response.send_message("Bạn không thể gửi tin nhắn này", ephemeral=True)
+            return
+        try:
+            selected_value = self.values[0]
+
+            if selected_value == "Tin tức":
+                category = "news"
+            elif selected_value == "Hướng dẫn":
+                category = "tutorial"
+            else:
+                category = selected_value.replace("Các lệnh ", "")
+
+            embed = self.view.build_embed(category)
+
+            await interaction.response.edit_message(embed=embed)
+
+        except Exception as e:
+            func.logger.error(f"Failed to send error message: {e}")    
 
 class HelpView(discord.ui.View):
     def __init__(self, bot: commands.Bot, author: discord.Member) -> None:
@@ -56,14 +91,14 @@ class HelpView(discord.ui.View):
         self.response: discord.Message = None
         self.categories: list[str] = [ name.capitalize() for name, cog in bot.cogs.items() if len([c for c in cog.walk_commands()]) ]
 
-        self.add_item(discord.ui.Button(label='Website', emoji='🌎', url='https://vocard.xyz'))
-        self.add_item(discord.ui.Button(label='Document', emoji=':support:915152950471581696', url='https://docs.vocard.xyz'))
-        self.add_item(discord.ui.Button(label='Github', emoji=':github:1098265017268322406', url='https://github.com/ChocoMeow/Vocard'))
-        self.add_item(discord.ui.Button(label='Donate', emoji=':patreon:913397909024800878', url='https://www.patreon.com/Vocard'))
+        self.add_item(discord.ui.Button(label='Website của bot Vocard', emoji='🌎', url='https://vocard.xyz'))
+        self.add_item(discord.ui.Button(label='Support Discord server', emoji=':support:915152950471581696', url='https://discord.gg/abecMmDnZz'))
+        # self.add_item(discord.ui.Button(label='Github', emoji=':github:1098265017268322406', url='https://github.com/ChocoMeow/Vocard'))
+        # self.add_item(discord.ui.Button(label='Donate', emoji=':patreon:913397909024800878', url='https://www.patreon.com/Vocard'))
         self.add_item(HelpDropdown(self.categories))
     
     async def on_error(self, error, item, interaction) -> None:
-        return
+            func.logger.error(f"Failed to send error message: {str(e)}")
 
     async def on_timeout(self) -> None:
         for child in self.children:
@@ -74,39 +109,75 @@ class HelpView(discord.ui.View):
         except:
             pass
 
-    async def interaction_check(self, interaction: discord.Interaction) -> None:
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
         return interaction.user == self.author
 
     def build_embed(self, category: str) -> discord.Embed:
         category = category.lower()
-        if category == "news":
-            embed = discord.Embed(title="Vocard Help Menu", url="https://discord.com/channels/811542332678996008/811909963718459392/1069971173116481636", color=func.settings.embed_color)
+        if category == "news" or category == "thông tin":
+            embed = discord.Embed(
+                title="Thông báo nào đó...", 
+                url="https://discord.com/channels/811542332678996008/811909963718459392/1069971173116481636", 
+                color=func.settings.embed_color
+            )
+
+            categories_list = ["Tin tức", "Hướng dẫn"] + self.categories
+            formatted_cats = []
+
+            for i, cat in enumerate(categories_list, 1):
+                prefix = "👉" if cat == "Tin tức" else str(i) + "."
+                formatted_cats.append(f"{prefix} {cat}")
             embed.add_field(
-                name=f"Available Categories: [{2 + len(self.categories)}]",
-                value="```py\n👉 News\n2. Tutorial\n{}```".format("".join(f"{i}. {c}\n" for i, c in enumerate(self.categories, start=3))),
+                name=f"Các mục đang có: [{len(categories_list)}]",
+                value="```py\n{}\n```".format("\n".join(formatted_cats)),
                 inline=True
             )
 
-            update = "Vocard is a simple music bot. It leads to a comfortable experience which is user-friendly, It supports YouTube, Soundcloud, Spotify, Twitch and more!"
-            embed.add_field(name="📰 Information:", value=update, inline=True)
-            embed.add_field(name="Get Started", value="```Join a voice channel and /play {Song/URL} a song. (Names, Youtube Video Links or Playlist links or Spotify links are supported on Vocard)```", inline=False)
+           embed.add_field(
+                name="📰 Thông tin:", 
+                value="MiaSitas là bản fork của discord bot [Vocard](https://vocard.xyz)(bởi ChocoMeow) được Việt hóa cộng thêm những chỉnh sửa nhỏ bởi Aretzera.",
+                inline=True
+            )
+            embed.add_field(
+                name="Cách sử dụng cơ bản:", 
+                value="```Vào 1 kênh voice nào đó rồi dùng /play {Tên nhạc/link của nó} để bật nhạc.```",
+                inline=False
+            )
             
             return embed
 
-        embed = discord.Embed(title=f"Category: {category.capitalize()}", color=func.settings.embed_color)
-        embed.add_field(name=f"Categories: [{2 + len(self.categories)}]", value="```py\n" + "\n".join(("👉 " if c == category.capitalize() else f"{i}. ") + c for i, c in enumerate(['News', 'Tutorial'] + self.categories, start=1)) + "```", inline=True)
+        embed = discord.Embed(
+            title=f"Mục: {category.capitalize()}", 
+            color=func.settings.embed_color
+        )
+
+        # Add categories list
+        embed.add_field(
+            name=f"Mục: [{2 + len(self.categories)}]",
+            value="```py\n" + "\n".join(
+                ("👉 " if c == category.capitalize() else f"{i}. ") + c
+                for i, c in enumerate(['News', 'Tutorial'] + self.categories, start=1)
+            ) + "```",
+            inline=True
+        )
 
         if category == 'tutorial':
-            embed.description = "How can use Vocard? Some simple commands you should know now after watching this video."
+            embed.description = "Có thể xem qua video này để biết được các lệnh cơ bản(do owner Vocard thực hiện)."
             embed.set_image(url="https://cdn.discordapp.com/attachments/674788144931012638/917656288899514388/final_61aef3aa7836890135c6010c_669380.gif")
         else:
-            cog = [c for _, c in self.bot.cogs.items() if _.lower() == category][0]
-
-            commands = [command for command in cog.walk_commands()]
-            embed.description = cog.description
-            embed.add_field(
-                name=f"{category} Commands: [{len(commands)}]",
-                value="```{}```".format("".join(f"/{command.qualified_name}\n" for command in commands if not command.qualified_name == cog.qualified_name))
-            )
+            try:
+                cog = next(c for _, c in self.bot.cogs.items() if _.lower() == category)
+                commands = [cmd for cmd in cog.walk_commands()]
+                embed.description = cog.description
+                embed.add_field(
+                    name=f"Các lệnh tại {category} : [{len(commands)}]",
+                    value="```{}```".format(
+                        "".join(f"/{cmd.qualified_name}\n" 
+                        for cmd in commands 
+                        if cmd.qualified_name != cog.qualified_name)
+                    )
+                )
+            except StopIteration:
+                embed.description = "Không tìm thấy lệnh nào trong mục này."
 
         return embed

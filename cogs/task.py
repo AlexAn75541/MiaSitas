@@ -60,10 +60,10 @@ class Task(commands.Cog):
                 await self.bot.change_presence(activity=self.bot.activity, status=status_type)
                 self.current_act = (self.current_act + 1) % len(func.settings.activity)
 
-                func.logger.info(f"Changed the bot status to {act_name}")
+                func.logger.info(f"Chỉnh bot sang hoạt động {act_name}")
 
         except Exception as e:
-            func.logger.error("Error occurred while changing the bot status!", exc_info=e)
+            func.logger.error("Đã có lỗi trong quá trình chuyển hoạt động", exc_info=e)
 
     @tasks.loop(minutes=5.0)
     async def player_check(self):
@@ -100,7 +100,7 @@ class Task(commands.Cog):
                                 break
                             
                 except Exception as e:
-                    func.logger.error("Error occurred while checking the player!", exc_info=e)
+                    func.logger.error("Trình phát nhạc đang có lỗi!", exc_info=e)
 
     @tasks.loop(hours=12.0)
     async def cache_cleaner(self):

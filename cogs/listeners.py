@@ -49,7 +49,7 @@ class Listeners(commands.Cog):
                     **n
                 )
             except Exception as e:
-                func.logger.error(f'Node {n["identifier"]} is not able to connect! - Reason: {e}')
+                func.logger.error(f'Server phát nhạc {n["identifier"]} không thể kết nói đến! - Lý do: {e}')
 
     async def restore_last_session_players(self) -> None:
         """Re-establish connections for players from the last session."""
@@ -121,7 +121,7 @@ class Listeners(commands.Cog):
                 await asyncio.sleep(5)
 
             except Exception as e:
-                func.logger.error(f"Error encountered while restoring a player for channel ID {channel_id}.", exc_info=e)
+                func.logger.error(f"Đã có lỗi trong lúc phát nhạc ở {channel_id}.", exc_info=e)
 
         # Delete the last session file if it exists.
         try:
@@ -145,7 +145,7 @@ class Listeners(commands.Cog):
     async def on_voicelink_track_exception(self, player: voicelink.Player, track, error: dict):
         try:
             player._track_is_stuck = True
-            await player.context.send(f"{error['message']} The next song will begin in the next 5 seconds.", delete_after=10)
+            await player.context.send(f"{error['message']} Bài hát tiếp theo sẽ được phát sau 5 giây", delete_after=10)
         except:
             pass
 

@@ -195,12 +195,12 @@ class CommandCheck(discord.app_commands.CommandTree):
     async def interaction_check(self, interaction: discord.Interaction, /) -> bool:
         if interaction.type == discord.InteractionType.application_command:
             if not interaction.guild:
-                await interaction.response.send_message("This command can only be used in guilds!")
+                await interaction.response.send_message("Lệnh này chỉ có thể sử dụng trong những máy chủ Discord.")
                 return False
 
             channel_perm = interaction.channel.permissions_for(interaction.guild.me)
             if not channel_perm.read_messages or not channel_perm.send_messages:
-                await interaction.response.send_message("I don't have permission to read or send messages in this channel.")
+                await interaction.response.send_message("Tôi không có quyền gửi tin nhắn trong kênh này.")
                 return False
             
         return True

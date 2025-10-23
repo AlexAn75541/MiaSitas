@@ -29,7 +29,7 @@ class LyricsDropdown(discord.ui.Select):
         self.view: LyricsView
 
         super().__init__(
-            placeholder="Select A Lyrics Translation",
+            placeholder="Chọn ngôn ngữ lời bài hát...",
             min_values=1, max_values=1,
             options=[discord.SelectOption(label=lang) for lang in langs], 
             custom_id="selectLyricsLangs"
@@ -72,8 +72,8 @@ class LyricsView(discord.ui.View):
     def build_embed(self) -> discord.Embed:
         chunk = self.source.get(self.lang)[self.current_page - 1]
         embed=discord.Embed(description=chunk, color=func.settings.embed_color)
-        embed.set_author(name=f"Searching Query: {self.name}", icon_url=self.author.display_avatar.url)
-        embed.set_footer(text=f"Page: {self.current_page}/{self.pages}")
+        embed.set_author(name=f"Truy xuất: {self.name}", icon_url=self.author.display_avatar.url)
+        embed.set_footer(text=f"Trang: {self.current_page}/{self.pages}")
         return embed
 
     @discord.ui.button(label='<<', style=discord.ButtonStyle.grey)
@@ -83,14 +83,14 @@ class LyricsView(discord.ui.View):
             return await interaction.response.edit_message(embed=self.build_embed())
         await interaction.response.defer()
 
-    @discord.ui.button(label='Back', style=discord.ButtonStyle.blurple)
+    @discord.ui.button(label='Quay lại', style=discord.ButtonStyle.blurple)
     async def back_button(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         if self.current_page > 1:
             self.current_page -= 1
             return await interaction.response.edit_message(embed=self.build_embed())
         await interaction.response.defer()
 
-    @discord.ui.button(label='Next', style=discord.ButtonStyle.blurple)
+    @discord.ui.button(label='Tiếp theo', style=discord.ButtonStyle.blurple)
     async def next_button(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         if self.current_page < self.pages:
             self.current_page += 1
