@@ -178,3 +178,4 @@ cython_debug/
 settings.json
 logs
 last-session.json
+.DS_Store
