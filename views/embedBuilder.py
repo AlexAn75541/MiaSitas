@@ -164,7 +164,7 @@ class EmbedBuilderView(discord.ui.View):
             ),
             discord.ui.TextInput(
                 label="Icon Url",
-                placeholder="Url của icon tác giả"
+                placeholder="Url của icon tác giả",
                 style=discord.TextStyle.short,
                 max_length=100,
                 default=data.get("author", {}).get("icon_url"),

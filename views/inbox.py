@@ -98,7 +98,7 @@ class InboxView(discord.ui.View):
         self.current = None
         await self.button_change(interaction)
     
-    @discord.ui.button(label='Bấm để lưu, style=discord.ButtonStyle.blurple)
+    @discord.ui.button(label='Bấm để lưu', style=discord.ButtonStyle.blurple)
     async def save_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self.response.edit(view=None) 
         self.stop()

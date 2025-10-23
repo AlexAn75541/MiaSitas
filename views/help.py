@@ -133,7 +133,7 @@ class HelpView(discord.ui.View):
                 inline=True
             )
 
-           embed.add_field(
+            embed.add_field(
                 name="📰 Thông tin:", 
                 value="MiaSitas là bản fork của discord bot [Vocard](https://vocard.xyz)(bởi ChocoMeow) được Việt hóa cộng thêm những chỉnh sửa nhỏ bởi Aretzera.",
                 inline=True
