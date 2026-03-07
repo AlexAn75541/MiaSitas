@@ -112,14 +112,28 @@ class Vocard(commands.Bot):
         # Set translator
         await self.tree.set_translator(Translator())
 
-        # Loading all the module in `cogs` folder
-        for module in os.listdir(func.ROOT_DIR + '/cogs'):
-            if module.endswith('.py'):
-                try:
-                    await self.load_extension(f"cogs.{module[:-3]}")
-                    func.logger.info(f"Loaded {module[:-3]}")
-                except Exception as e:
-                    func.logger.error(f"Something went wrong while loading {module[:-3]} cog.", exc_info=e)
+        # Load all cogs recursively (e.g. cogs/music/*.py, cogs/utilities/*.py)
+        cogs_root = os.path.join(func.ROOT_DIR, "cogs")
+        discovered_modules: list[str] = []
+        for root, _, files in os.walk(cogs_root):
+            for filename in files:
+                if not filename.endswith(".py") or filename == "__init__.py":
+                    continue
+
+                full_path = os.path.join(root, filename)
+                rel_path = os.path.relpath(full_path, func.ROOT_DIR)
+                module_name = rel_path[:-3].replace(os.sep, ".")
+                discovered_modules.append(module_name)
+
+        if not discovered_modules:
+            func.logger.warning("No cog modules found in cogs/ directory")
+
+        for module_name in sorted(discovered_modules):
+            try:
+                await self.load_extension(module_name)
+                func.logger.info(f"Loaded {module_name}")
+            except Exception as e:
+                func.logger.error(f"Something went wrong while loading {module_name} cog.", exc_info=e)
 
         self.ipc_client: IPCClient = IPCClient(self, **bot_config.ipc_client)
         if bot_config.ipc_client.get("enable", False):
@@ -146,6 +160,38 @@ class Vocard(commands.Bot):
         func.logger.info(f"Discord Version: {discord.__version__}")
         func.logger.info(f"Python Version: {sys.version}")
         func.logger.info("------------------")
+
+        # Apply configured presence immediately instead of staying on startup placeholder.
+        try:
+            activities = Config().activity
+            act_data = activities[0] if activities else {}
+
+            act_type_name = str(act_data.get("type", "")).lower() if isinstance(act_data, dict) else ""
+            act_name = act_data.get("name") if isinstance(act_data, dict) else None
+
+            # Backward compatibility with legacy format, e.g. {"listen": "/help"}
+            if not act_name and isinstance(act_data, dict) and act_data:
+                legacy_key, legacy_value = next(iter(act_data.items()))
+                type_map = {
+                    "play": "playing",
+                    "listen": "listening",
+                    "watch": "watching",
+                    "stream": "streaming",
+                    "compete": "competing",
+                }
+                act_type_name = type_map.get(str(legacy_key).lower(), "playing")
+                act_name = str(legacy_value)
+
+            if act_name:
+                act_type = getattr(discord.ActivityType, act_type_name or "playing", discord.ActivityType.playing)
+                status_name = str(act_data.get("status", "online")).lower() if isinstance(act_data, dict) else "online"
+                status = getattr(discord.Status, status_name, discord.Status.online)
+
+                self.activity = discord.Activity(type=act_type, name=act_name)
+                await self.change_presence(activity=self.activity, status=status)
+                func.logger.info(f"Applied bot presence: {act_type.name} {act_name}")
+        except Exception as e:
+            func.logger.warning("Failed to apply configured presence", exc_info=e)
 
         bot_config.client_id = self.user.id
         LangHandler._local_langs.clear()
