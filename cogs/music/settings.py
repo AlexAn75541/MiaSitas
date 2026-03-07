@@ -44,7 +44,7 @@ def status_icon(status: bool) -> str:
 class Settings(commands.Cog, name="settings"):
     def __init__(self, bot) -> None:
         self.bot: commands.Bot = bot
-        self.description = "This category is only available to admin permissions on the server."
+        self.description = "Danh mục này chỉ dành cho người có quyền quản trị trên máy chủ."
     
     @commands.hybrid_group(
         name="settings",
@@ -60,7 +60,7 @@ class Settings(commands.Cog, name="settings"):
     @commands.has_permissions(manage_guild=True)
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def prefix(self, ctx: commands.Context, prefix: str):
-        "Change the default prefix for message commands."
+        "Thay đổi prefix mặc định cho lệnh tin nhắn."
         if not self.bot.intents.message_content:
             return await send_localized_message(ctx, "common.error.missingIntents", "MESSAGE_CONTENT", ephemeral=True)
         
@@ -71,7 +71,7 @@ class Settings(commands.Cog, name="settings"):
     @commands.has_permissions(manage_guild=True)
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def language(self, ctx: commands.Context, language: str):
-        "You can choose your preferred language, the bot message will change to the language you set."
+        "Bạn có thể chọn ngôn ngữ ưa thích, tin nhắn của bot sẽ thay đổi theo ngôn ngữ bạn đặt."
         language = language.upper()
         if language not in voicelink.LangHandler.get_all_languages():
             return await send_localized_message(ctx, "settings.actions.languageNotFound")
@@ -89,7 +89,7 @@ class Settings(commands.Cog, name="settings"):
     @commands.has_permissions(manage_guild=True)
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def dj(self, ctx: commands.Context, role: discord.Role = None):
-        "Set a DJ role or remove DJ role."
+        "Đặt vai trò DJ hoặc xóa vai trò DJ."
         await MongoDBHandler.update_settings(ctx.guild.id, {"$set": {'dj': role.id}} if role else {"$unset": {'dj': None}})
         await send_localized_message(ctx, 'settings.actions.djSet', f"<@&{role.id}>" if role else "None")
 
@@ -101,7 +101,7 @@ class Settings(commands.Cog, name="settings"):
     @commands.has_permissions(manage_guild=True)
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def queue(self, ctx: commands.Context, mode: str):
-        "Change to another type of queue mode."
+        "Chuyển sang chế độ hàng chờ khác."
         mode = mode if mode.lower() in voicelink.queue.QUEUE_TYPES else next(iter(voicelink.queue.QUEUE_TYPES))
         await MongoDBHandler.update_settings(ctx.guild.id, {"$set": {"queue_type": mode}})
         await send_localized_message(ctx, "settings.actions.queueModeSet", mode.capitalize())
@@ -110,7 +110,7 @@ class Settings(commands.Cog, name="settings"):
     @commands.has_permissions(manage_guild=True)
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def playforever(self, ctx: commands.Context):
-        "Toggles 24/7 mode, which disables automatic inactivity-based disconnects."
+        "Bật/tắt chế độ 24/7, tắt tự động ngắt kết nối khi không hoạt động."
         settings = await MongoDBHandler.get_settings(ctx.guild.id)
         toggle = settings.get('24/7', False)
         await MongoDBHandler.update_settings(ctx.guild.id, {"$set": {'24/7': not toggle}})
@@ -120,7 +120,7 @@ class Settings(commands.Cog, name="settings"):
     @commands.has_permissions(manage_guild=True)
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def bypassvote(self, ctx: commands.Context):
-        "Toggles voting system."
+        "Bật/tắt hệ thống bỏ phiếu."
         settings = await MongoDBHandler.get_settings(ctx.guild.id)
         toggle = settings.get('disabled_vote', True)
         await MongoDBHandler.update_settings(ctx.guild.id, {"$set": {'disabled_vote': not toggle}})
@@ -130,7 +130,7 @@ class Settings(commands.Cog, name="settings"):
     @commands.has_permissions(manage_guild=True)
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def view(self, ctx: commands.Context):
-        "Show all the bot settings in your server."
+        "Hiển thị tất cả cài đặt của bot trong máy chủ của bạn."
         settings = await MongoDBHandler.get_settings(ctx.guild.id)
 
         texts = await LangHandler.get_lang(ctx.guild.id, "settings.menu", "settings.basic.title", "settings.basic.value", "settings.queue.title", "settings.queue.value", "settings.voice.title", "settings.permissions.title", "settings.permissions.value")
@@ -172,11 +172,11 @@ class Settings(commands.Cog, name="settings"):
         await dispatch_message(ctx, embed)
 
     @settings.command(name="volume", aliases=get_aliases("volume"))
-    @app_commands.describe(value="Input a integer.")
+    @app_commands.describe(value="Nhập một số nguyên.")
     @commands.has_permissions(manage_guild=True)
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def volume(self, ctx: commands.Context, value: commands.Range[int, 1, 150]):
-        "Set the player's volume."
+        "Cài đặt âm lượng của trình phát."
         player: voicelink.Player = ctx.guild.voice_client
         if player:
             await player.set_volume(value, ctx.author)
@@ -188,7 +188,7 @@ class Settings(commands.Cog, name="settings"):
     @commands.has_permissions(manage_guild=True)
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def togglecontroller(self, ctx: commands.Context):
-        "Toggles the music controller."
+        "Bật/tắt bộ điều khiển nhạc."
         settings = await MongoDBHandler.get_settings(ctx.guild.id)
         toggle = not settings.get('controller', True)
 
@@ -206,7 +206,7 @@ class Settings(commands.Cog, name="settings"):
     @commands.has_permissions(manage_guild=True)
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def duplicatetrack(self, ctx: commands.Context):
-        "Toggle Vocard to prevent duplicate songs from queuing."
+        "Bật/tắt ngăn chặn bài hát trùng lặp trong hàng chờ."
         settings = await MongoDBHandler.get_settings(ctx.guild.id)
         toggle = not settings.get('duplicate_track', False)
         player: voicelink.Player = ctx.guild.voice_client
@@ -220,7 +220,7 @@ class Settings(commands.Cog, name="settings"):
     @commands.has_permissions(manage_guild=True)
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def customcontroller(self, ctx: commands.Context):
-        "Customizes music controller embeds."
+        "Tùy chỉnh giao diện bộ điều khiển nhạc."
         settings = await MongoDBHandler.get_settings(ctx.guild.id)
         controller_settings = settings.get("default_controller", voicelink.Config().controller)
 
@@ -232,7 +232,7 @@ class Settings(commands.Cog, name="settings"):
     @commands.has_permissions(manage_guild=True)
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def controllermsg(self, ctx: commands.Context):
-        "Toggles to send a message when clicking the button in the music controller."
+        "Bật/tắt gửi tin nhắn khi nhấn nút trong bộ điều khiển nhạc."
         settings = await MongoDBHandler.get_settings(ctx.guild.id)
         toggle = not settings.get('controller_msg', True)
 
@@ -243,7 +243,7 @@ class Settings(commands.Cog, name="settings"):
     @commands.has_permissions(manage_guild=True)
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def silentmsg(self, ctx: commands.Context):
-        "Toggle silent messaging to send discreet messages without alerting recipients."
+        "Bật/tắt chế độ tin nhắn im lặng để gửi tin nhắn kín đáo."
         settings = await MongoDBHandler.get_settings(ctx.guild.id)
         toggle = not settings.get('silent_msg', False)
 
@@ -254,18 +254,18 @@ class Settings(commands.Cog, name="settings"):
     @commands.has_permissions(manage_guild=True)
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def stageannounce(self, ctx: commands.Context, template: str = None):
-        "Customize the channel topic template"
+        "Tùy chỉnh mẫu chủ đề kênh"
         await MongoDBHandler.update_settings(ctx.guild.id, {"$set": {'stage_announce_template': template}})
         await send_localized_message(ctx, "voice.stageChannel.setAnnounceTemplate")
 
     @settings.command(name="setupchannel", aliases=get_aliases("setupchannel"))
     @app_commands.describe(
-        channel="Provide a request channel. If not, a text channel will be generated."
+        channel="Cung cấp kênh yêu cầu. Nếu không, một kênh văn bản sẽ được tạo."
     )
     @commands.has_permissions(manage_guild=True)
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def setupchannel(self, ctx: commands.Context, channel: discord.TextChannel = None) -> None:
-        "Sets up a dedicated channel for song requests in your server."
+        "Thiết lập kênh chuyên dụng cho yêu cầu bài hát trong máy chủ."
         if not self.bot.intents.message_content:
             return await send_localized_message(ctx, "common.error.missingIntents", "MESSAGE_CONTENT", ephemeral=True)
         
@@ -298,21 +298,21 @@ class Settings(commands.Cog, name="settings"):
     @app_commands.command(name="debug")
     async def debug(self, interaction: discord.Interaction):
         if interaction.user.id not in voicelink.Config().bot_access_user:
-            return await interaction.response.send_message("You are not able to use this command!")
+            return await interaction.response.send_message("Bạn không được phép sử dụng lệnh này!")
 
         memory = psutil.virtual_memory()
         disk = psutil.disk_usage(func.ROOT_DIR)
 
         available_memory, total_memory = memory.available, memory.total
         used_disk_space, total_disk_space = disk.used, disk.total
-        embed = discord.Embed(title="📄 Debug Panel", color=voicelink.Config().embed_color)
-        embed.description = "```==    System Info    ==\n" \
+        embed = discord.Embed(title="📄 Bảng điều khiển Debug", color=voicelink.Config().embed_color)
+        embed.description = "```==    Thông tin hệ thống    ==\n" \
                             f"• CPU:     {psutil.cpu_freq().current}Mhz ({psutil.cpu_percent()}%)\n" \
                             f"• RAM:     {format_bytes(total_memory - available_memory)}/{format_bytes(total_memory, True)} ({memory.percent}%)\n" \
                             f"• DISK:    {format_bytes(total_disk_space - used_disk_space)}/{format_bytes(total_disk_space, True)} ({disk.percent}%)```"
 
         embed.add_field(
-            name="🤖 Bot Information",
+            name="🤖 Thông tin Bot",
             value=f"```• VERSION: {voicelink.Config().version}\n" \
                   f"• LATENCY: {self.bot.latency:.2f}ms\n" \
                   f"• GUILDS:  {len(self.bot.guilds)}\n" \
@@ -326,7 +326,7 @@ class Settings(commands.Cog, name="settings"):
             if node._available:
                 total_memory = node.stats.used + node.stats.free
                 embed.add_field(
-                    name=f"{name} Node - 🟢 Connected",
+                    name=f"{name} Node - 🟢 Đã kết nối",
                     value=f"```• ADDRESS: {node._host}:{node._port}\n" \
                         f"• PLAYERS: {len(node._players)}\n" \
                         f"• CPU:     {node.stats.cpu_process_load:.1f}%\n" \
@@ -336,9 +336,9 @@ class Settings(commands.Cog, name="settings"):
                 )
             else:
                 embed.add_field(
-                    name=f"{name} Node - 🔴 Disconnected",
+                    name=f"{name} Node - 🔴 Ngắt kết nối",
                     value=f"```• ADDRESS: {node._host}:{node._port}\n" \
-                        f"• PLAYERS: {len(node._players)}\nNo extra data is available for display```",
+                        f"• PLAYERS: {len(node._players)}\nKhông có dữ liệu bổ sung để hiển thị```",
                 )
 
         await interaction.response.send_message(embed=embed, view=DebugView(self.bot), ephemeral=True)

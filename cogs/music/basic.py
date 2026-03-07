@@ -66,7 +66,7 @@ async def nowplay(ctx: commands.Context, player: voicelink.Player):
 class Basic(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
-        self.description = "This category is available to anyone on this server. Voting is required in certain commands."
+        self.description = "Danh mục này có sẵn cho bất kỳ ai trong máy chủ này. Bỏ phiếu được yêu cầu trong một số lệnh."
         self.ctx_menu = app_commands.ContextMenu(
             name="play",
             callback=self._play
@@ -101,10 +101,10 @@ class Basic(commands.Cog):
         return [app_commands.Choice(name=truncate_string(f"🕒 [{format_ms(track['length'])}] {track['author']} - {track['title']}", 100), value=track['uri']) for track in history.values() if len(track['uri']) <= 100][:25]
             
     @commands.hybrid_command(name="connect", aliases=get_aliases("connect"))
-    @app_commands.describe(channel="Provide a channel to connect.")
+    @app_commands.describe(channel="Cung cấp kênh để kết nối.")
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def connect(self, ctx: commands.Context, channel: discord.VoiceChannel = None) -> None:
-        "Connect to a voice channel."
+        "Kết nối vào kênh thoại."
         try:
             player = await voicelink.connect_channel(ctx, channel)
         except discord.errors.ClientException:
@@ -114,14 +114,14 @@ class Basic(commands.Cog):
                 
     @commands.hybrid_command(name="play", aliases=get_aliases("play"))
     @app_commands.describe(
-        query="Input a query or a searchable link.",
-        start="Specify a time you would like to start, e.g. 1:00",
-        end="Specify a time you would like to end, e.g. 4:00"
+        query="Nhập truy vấn hoặc liên kết có thể tìm kiếm.",
+        start="Chỉ định thời gian bắt đầu, ví dụ: 1:00",
+        end="Chỉ định thời gian kết thúc, ví dụ: 4:00"
     )
     @app_commands.autocomplete(query=play_autocomplete)
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def play(self, ctx: commands.Context, *, query: str, start: str = "0", end: str = "0") -> None:
-        "Loads your input into the queue."
+        "Tải bài hát vào hàng chờ."
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             player = await voicelink.connect_channel(ctx)
@@ -206,8 +206,8 @@ class Basic(commands.Cog):
 
     @commands.hybrid_command(name="search", aliases=get_aliases("search"))
     @app_commands.describe(
-        query="Input the name of the song.",
-        platform="Select the platform you want to search."
+        query="Nhập tên bài hát.",
+        platform="Chọn nền tảng bạn muốn tìm kiếm."
     )
     @app_commands.choices(platform=[
         app_commands.Choice(name=search_type.display_name, value=search_type.name)
@@ -215,7 +215,7 @@ class Basic(commands.Cog):
     ])
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def search(self, ctx: commands.Context, *, query: str, platform: str = Config().search_platform.name):
-        "Searches your query and displays the results."
+        "Tìm kiếm truy vấn của bạn và hiển thị kết quả."
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             player = await voicelink.connect_channel(ctx)
@@ -251,14 +251,14 @@ class Basic(commands.Cog):
 
     @commands.hybrid_command(name="playtop", aliases=get_aliases("playtop"))
     @app_commands.describe(
-        query="Input a query or a searchable link.",
-        start="Specify a time you would like to start, e.g. 1:00",
-        end="Specify a time you would like to end, e.g. 4:00"
+        query="Nhập truy vấn hoặc liên kết có thể tìm kiếm.",
+        start="Chỉ định thời gian bắt đầu, ví dụ: 1:00",
+        end="Chỉ định thời gian kết thúc, ví dụ: 4:00"
     )
     @app_commands.autocomplete(query=play_autocomplete)
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def playtop(self, ctx: commands.Context, *, query: str, start: str = "0", end: str = "0"):
-        "Adds a song with the given url or query on the top of the queue."
+        "Thêm bài hát lên đầu hàng chờ."
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             player = await voicelink.connect_channel(ctx)
@@ -297,12 +297,12 @@ class Basic(commands.Cog):
     @commands.hybrid_command(name="forceplay", aliases=get_aliases("forceplay"))
     @app_commands.describe(
         query="Input a query or a searchable link.",
-        start="Specify a time you would like to start, e.g. 1:00",
-        end="Specify a time you would like to end, e.g. 4:00"
+        start="Chỉ định thời gian bắt đầu, ví dụ: 1:00",
+        end="Chỉ định thời gian kết thúc, ví dụ: 4:00"
     )
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def forceplay(self, ctx: commands.Context, *, query: str, start: str = "0", end: str = "0"):
-        "Enforce playback using the given URL or query."
+        "Ép buộc phát bài hát theo URL hoặc truy vấn đã cho."
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             player = await voicelink.connect_channel(ctx)
@@ -341,7 +341,7 @@ class Basic(commands.Cog):
     @commands.hybrid_command(name="pause", aliases=get_aliases("pause"))
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def pause(self, ctx: commands.Context):
-        "Pause the music."
+        "Tạm dừng nhạc."
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             return await send_localized_message(ctx, "player.errors.noPlayer", ephemeral=True)
@@ -363,7 +363,7 @@ class Basic(commands.Cog):
     @commands.hybrid_command(name="resume", aliases=get_aliases("resume"))
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def resume(self, ctx: commands.Context):
-        "Resume the music."
+        "Tiếp tục phát nhạc."
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             return await send_localized_message(ctx, "player.errors.noPlayer", ephemeral=True)
@@ -383,10 +383,10 @@ class Basic(commands.Cog):
         await send_localized_message(ctx, "player.controls.resume.success", ctx.author)
 
     @commands.hybrid_command(name="skip", aliases=get_aliases("skip"))
-    @app_commands.describe(index="Enter a index that you want to skip to.")
+    @app_commands.describe(index="Nhập vị trí bạn muốn bỏ qua tới.")
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def skip(self, ctx: commands.Context, index: int = 0):
-        "Skips to the next song or skips to the specified song."
+        "Bỏ qua bài hát tiếp theo hoặc bỏ qua tới bài hát được chỉ định."
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             return await send_localized_message(ctx, "player.errors.noPlayer", ephemeral=True)
@@ -417,10 +417,10 @@ class Basic(commands.Cog):
         await player.stop()
 
     @commands.hybrid_command(name="back", aliases=get_aliases("back"))
-    @app_commands.describe(index="Enter a index that you want to skip back to.")
+    @app_commands.describe(index="Nhập vị trí bạn muốn quay lại.")
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def back(self, ctx: commands.Context, index: int = 1):
-        "Skips back to the previous song or skips to the specified previous song."
+        "Quay lại bài hát trước hoặc quay lại bài hát được chỉ định."
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             return await send_localized_message(ctx, "player.errors.noPlayer", ephemeral=True)
@@ -448,10 +448,10 @@ class Basic(commands.Cog):
             await player.set_repeat(voicelink.LoopType.OFF)
 
     @commands.hybrid_command(name="seek", aliases=get_aliases("seek"))
-    @app_commands.describe(position="Input position. Exmaple: 1:20.")
+    @app_commands.describe(position="Nhập vị trí. Ví dụ: 1:20.")
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def seek(self, ctx: commands.Context, position: str):
-        "Change the player position."
+        "Thay đổi vị trí phát."
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             return await send_localized_message(ctx, "player.errors.noPlayer", ephemeral=True)
@@ -476,7 +476,7 @@ class Basic(commands.Cog):
     )
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def queue(self, ctx: commands.Context):
-        "Display the players queue songs in your queue."
+        "Hiển thị các bài hát trong hàng chờ."
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             return await send_localized_message(ctx, "player.errors.noPlayer", ephemeral=True)
@@ -492,7 +492,7 @@ class Basic(commands.Cog):
     @queue.command(name="export", aliases=get_aliases("export"))
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def export(self, ctx: commands.Context):
-        "Exports the entire queue to a text file"
+        "Xuất toàn bộ hàng chờ ra tệp văn bản"
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             return await send_localized_message(ctx, "player.errors.noPlayer", ephemeral=True)
@@ -517,7 +517,7 @@ class Basic(commands.Cog):
                 raw += ","
             total_length += track.length
 
-        temp = "!Remember do not change this file!\n------------->Info<-------------\nGuild: {} ({})\nRequester: {} ({})\nTracks: {} - {}\n------------>Tracks<------------\n".format(
+        temp = "!Nhớ đừng thay đổi tệp này!\n------------->Thông tin<-------------\nMáy chủ: {} ({})\nNgười yêu cầu: {} ({})\nBài hát: {} - {}\n------------>Danh sách<------------\n".format(
             ctx.guild.name, ctx.guild.id,
             ctx.author.display_name, ctx.author.id,
             len(tracks), format_ms(total_length)
@@ -529,7 +529,7 @@ class Basic(commands.Cog):
     @queue.command(name="import", aliases=get_aliases("import"))
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def _import(self, ctx: commands.Context, attachment: discord.Attachment):
-        "Imports the text file and adds the track to the current queue."
+        "Nhập tệp văn bản và thêm bài hát vào hàng chờ hiện tại."
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             player = await voicelink.connect_channel(ctx)
@@ -559,7 +559,7 @@ class Basic(commands.Cog):
     @commands.hybrid_command(name="history", aliases=get_aliases("history"))
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def history(self, ctx: commands.Context):
-        "Display the players queue songs in your history queue."
+        "Hiển thị các bài hát trong lịch sử hàng chờ."
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             return await send_localized_message(ctx, "player.errors.noPlayer", ephemeral=True)
@@ -576,7 +576,7 @@ class Basic(commands.Cog):
     @commands.hybrid_command(name="leave", aliases=get_aliases("leave"))
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def leave(self, ctx: commands.Context):
-        "Disconnects the bot from your voice channel and chears the queue."
+        "Ngắt kết nối bot khỏi kênh thoại và xóa hàng chờ."
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             return await send_localized_message(ctx, "player.errors.noPlayer", ephemeral=True)
@@ -597,7 +597,7 @@ class Basic(commands.Cog):
     @commands.hybrid_command(name="nowplaying", aliases=get_aliases("nowplaying"))
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def nowplaying(self, ctx: commands.Context):
-        "Shows details of the current track."
+        "Hiển thị chi tiết bài hát hiện tại."
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             return await send_localized_message(ctx, "player.errors.noPlayer", ephemeral=True)
@@ -608,14 +608,14 @@ class Basic(commands.Cog):
         await nowplay(ctx, player)
 
     @commands.hybrid_command(name="loop", aliases=get_aliases("loop"))
-    @app_commands.describe(mode="Choose a looping mode.")
+    @app_commands.describe(mode="Chọn chế độ lặp lại.")
     @app_commands.choices(mode=[
         app_commands.Choice(name=loop_type.name.title(), value=loop_type.name)
         for loop_type in voicelink.LoopType
     ])
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def loop(self, ctx: commands.Context, mode: str):
-        "Changes Loop mode."
+        "Thay đổi chế độ lặp lại."
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             return await send_localized_message(ctx, "player.errors.noPlayer", ephemeral=True)
@@ -627,14 +627,14 @@ class Basic(commands.Cog):
         await send_localized_message(ctx, "player.controls.repeat", mode.capitalize())
 
     @commands.hybrid_command(name="clear", aliases=get_aliases("clear"))
-    @app_commands.describe(queue="Choose a queue that you want to clear.")
+    @app_commands.describe(queue="Chọn hàng chờ bạn muốn xóa.")
     @app_commands.choices(queue=[
-        app_commands.Choice(name='Queue', value='queue'),
-        app_commands.Choice(name='History', value='history')
+        app_commands.Choice(name='Hàng chờ', value='queue'),
+        app_commands.Choice(name='Lịch sử', value='history')
     ])
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def clear(self, ctx: commands.Context, queue: str = "queue"):
-        "Remove all the tracks in your queue or history queue."
+        "Xóa tất cả bài hát khỏi hàng chờ hoặc lịch sử."
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             return await send_localized_message(ctx, "player.errors.noPlayer", ephemeral=True)
@@ -647,13 +647,13 @@ class Basic(commands.Cog):
 
     @commands.hybrid_command(name="remove", aliases=get_aliases("remove"))
     @app_commands.describe(
-        position1="Input a position from the queue to be removed.",
-        position2="Set the range of the queue to be removed.",
-        member="Remove tracks requested by a specific member."
+        position1="Nhập vị trí bài hát cần xóa.",
+        position2="Đặt phạm vi hàng chờ cần xóa.",
+        member="Xóa bài hát do một thành viên cụ thể yêu cầu."
     )
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def remove(self, ctx: commands.Context, position1: int, position2: int = None, member: discord.Member = None):
-        "Removes specified track or a range of tracks from the queue."
+        "Xóa bài hát hoặc phạm vi bài hát khỏi hàng chờ."
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             return await send_localized_message(ctx, "player.errors.noPlayer", ephemeral=True)
@@ -665,10 +665,10 @@ class Basic(commands.Cog):
         await send_localized_message(ctx, "queue.management.removed", len(removed_tracks.keys()))
 
     @commands.hybrid_command(name="forward", aliases=get_aliases("forward"))
-    @app_commands.describe(position="Input an amount that you to forward to. Exmaple: 1:20")
+    @app_commands.describe(position="Nhập thời gian bạn muốn tua tới. Ví dụ: 1:20")
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def forward(self, ctx: commands.Context, position: str = "10"):
-        "Forwards by a certain amount of time in the current track. The default is 10 seconds."
+        "Tua tới theo một khoảng thời gian trong bài hát hiện tại. Mặc định là 10 giây."
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             return await send_localized_message(ctx, "player.errors.noPlayer", ephemeral=True)
@@ -686,10 +686,10 @@ class Basic(commands.Cog):
         await send_localized_message(ctx, "player.controls.forward", format_ms(player.position + num))
 
     @commands.hybrid_command(name="rewind", aliases=get_aliases("rewind"))
-    @app_commands.describe(position="Input an amount that you to rewind to. Exmaple: 1:20")
+    @app_commands.describe(position="Nhập thời gian bạn muốn tua lại. Ví dụ: 1:20")
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def rewind(self, ctx: commands.Context, position: str = "10"):
-        "Rewind by a certain amount of time in the current track. The default is 10 seconds."
+        "Tua lại theo một khoảng thời gian trong bài hát hiện tại. Mặc định là 10 giây."
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             return await send_localized_message(ctx, "player.errors.noPlayer", ephemeral=True)
@@ -709,7 +709,7 @@ class Basic(commands.Cog):
     @commands.hybrid_command(name="replay", aliases=get_aliases("replay"))
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def replay(self, ctx: commands.Context):
-        "Reset the progress of the current song."
+        "Đặt lại tiến trình của bài hát hiện tại."
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             return await send_localized_message(ctx, "player.errors.noPlayer", ephemeral=True)
@@ -726,7 +726,7 @@ class Basic(commands.Cog):
     @commands.hybrid_command(name="shuffle", aliases=get_aliases("shuffle"))
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def shuffle(self, ctx: commands.Context):
-        "Randomizes the tracks in the queue."
+        "Xáo trộn ngẫu nhiên các bài hát trong hàng chờ."
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             return await send_localized_message(ctx, "player.errors.noPlayer", ephemeral=True)
@@ -744,12 +744,12 @@ class Basic(commands.Cog):
 
     @commands.hybrid_command(name="swap", aliases=get_aliases("swap"))
     @app_commands.describe(
-        position1="The track to swap. Example: 2",
-        position2="The track to swap with position1. Exmaple: 1"
+        position1="Bài hát cần hoán đổi. Ví dụ: 2",
+        position2="Bài hát để hoán đổi với vị trí 1. Ví dụ: 1"
     )
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def swap(self, ctx: commands.Context, position1: int, position2: int):
-        "Swaps the specified song to the specified song."
+        "Hoán đổi bài hát được chỉ định với bài hát khác."
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             return await send_localized_message(ctx, "player.errors.noPlayer", ephemeral=True)
@@ -762,12 +762,12 @@ class Basic(commands.Cog):
 
     @commands.hybrid_command(name="move", aliases=get_aliases("move"))
     @app_commands.describe(
-        target="The track to move. Example: 2",
-        to="The new position to move the track to. Exmaple: 1"
+        target="Bài hát cần di chuyển. Ví dụ: 2",
+        to="Vị trí mới để di chuyển bài hát tới. Ví dụ: 1"
     )
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def move(self, ctx: commands.Context, target: int, to: int):
-        "Moves the specified song to the specified position."
+        "Di chuyển bài hát được chỉ định tới vị trí được chỉ định."
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             return await send_localized_message(ctx, "player.errors.noPlayer", ephemeral=True)
@@ -779,10 +779,10 @@ class Basic(commands.Cog):
         await send_localized_message(ctx, "queue.management.moved", moved_track, to)
 
     @commands.hybrid_command(name="lyrics", aliases=get_aliases("lyrics"))
-    @app_commands.describe(title="Searches for your query and displays the reutned lyrics.")
+    @app_commands.describe(title="Tìm kiếm truy vấn và hiển thị lời bài hát.")
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def lyrics(self, ctx: commands.Context, title: str = "", artist: str = ""):
-        "Displays lyrics for the playing track."
+        "Hiển thị lời bài hát đang phát."
         if not title:
             player: voicelink.Player = ctx.guild.voice_client
             if not player or not player.is_playing:
@@ -802,10 +802,10 @@ class Basic(commands.Cog):
             view.response = await dispatch_message(ctx, await view.build_embed(), view=view)
 
     @commands.hybrid_command(name="swapdj", aliases=get_aliases("swapdj"))
-    @app_commands.describe(member="Choose a member to transfer the dj role.")
+    @app_commands.describe(member="Chọn thành viên để chuyển vai trò DJ.")
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def swapdj(self, ctx: commands.Context, member: discord.Member):
-        "Transfer dj to another."
+        "Chuyển DJ cho người khác."
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             return await send_localized_message(ctx, "player.errors.noPlayer", ephemeral=True)
@@ -828,7 +828,7 @@ class Basic(commands.Cog):
     @commands.hybrid_command(name="autoplay", aliases=get_aliases("autoplay"))
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def autoplay(self, ctx: commands.Context):
-        "Toggles autoplay mode, it will automatically queue the best songs to play."
+        "Bật/tắt chế độ tự động phát, sẽ tự động thêm bài hát phù hợp nhất vào hàng chờ."
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             return await send_localized_message(ctx, "player.errors.noPlayer", ephemeral=True)
@@ -850,7 +850,7 @@ class Basic(commands.Cog):
     @app_commands.autocomplete(category=help_autocomplete)
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def help(self, ctx: commands.Context, category: str = "News") -> None:
-        "Lists all the commands in Vocard."
+        "Liệt kê tất cả các lệnh của MiaSitas."
         if category not in self.bot.cogs:
             category = "News"
         view = HelpView(self.bot, ctx.author)
@@ -860,7 +860,7 @@ class Basic(commands.Cog):
     @commands.hybrid_command(name="ping", aliases=get_aliases("ping"))
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def ping(self, ctx: commands.Context):
-        "Test if the bot is alive, and see the delay between your commands and my response."
+        "Kiểm tra xem bot có hoạt động không và xem độ trễ giữa lệnh của bạn và phản hồi của bot."
         player: voicelink.Player = ctx.guild.voice_client
 
         value = await LangHandler.get_lang(ctx.guild.id, "ping.title1", "ping.field1", "ping.title2", "ping.field2")
@@ -869,7 +869,7 @@ class Basic(commands.Cog):
         embed.add_field(
             name=value[0],
             value=value[1].format(
-                "0", "0", self.bot.latency, '😭' if self.bot.latency > 5 else ('😨' if self.bot.latency > 1 else '👌'), "St Louis, MO, United States"
+                "0", "0", self.bot.latency, '😭' if self.bot.latency > 5 else ('😨' if self.bot.latency > 1 else '👌'), "Việt Nam"
         ))
 
         if player:

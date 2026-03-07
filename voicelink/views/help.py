@@ -31,13 +31,13 @@ class HelpDropdown(discord.ui.Select):
         self.view: HelpView
 
         super().__init__(
-            placeholder="Select Category!",
+            placeholder="Chọn danh mục!",
             min_values=1, max_values=1,
             options=[
-                discord.SelectOption(emoji="🆕", label="News", description="View new updates of Vocard."),
-                discord.SelectOption(emoji="🕹️", label="Tutorial", description="How to use Vocard."),
+                discord.SelectOption(emoji="🆕", label="Tin mới", value="News", description="Xem các cập nhật mới của MiaSitas."),
+                discord.SelectOption(emoji="🕹️", label="Hướng dẫn", value="Tutorial", description="Cách sử dụng MiaSitas."),
             ] + [
-                discord.SelectOption(emoji=emoji, label=f"{category} Commands", description=f"This is {category.lower()} Category.")
+                discord.SelectOption(emoji=emoji, label=f"Lệnh {category}", value=f"{category} Commands", description=f"Đây là danh mục {category.lower()}.")
                 for category, emoji in zip(categories, ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣"])
             ],
             custom_id="select"
@@ -56,8 +56,8 @@ class HelpView(discord.ui.View):
         self.response: discord.Message = None
         self.categories: list[str] = [ name.capitalize() for name, cog in bot.cogs.items() if len([c for c in cog.walk_commands()]) ]
 
-        self.add_item(discord.ui.Button(label='Website của bot Vocard', emoji='🌎', url='https://vocard.xyz'))
-        self.add_item(discord.ui.Button(label='Support Discord server', emoji=':support:915152950471581696', url='https://discord.gg/cKCKrvAD'))
+        self.add_item(discord.ui.Button(label='Website của bot MiaSitas', emoji='🌎', url='https://vocard.xyz'))
+        self.add_item(discord.ui.Button(label='Máy chủ Discord hỗ trợ', emoji=':support:915152950471581696', url='https://discord.gg/cKCKrvAD'))
         self.add_item(HelpDropdown(self.categories))
 
     async def on_timeout(self) -> None:
@@ -75,10 +75,10 @@ class HelpView(discord.ui.View):
     def build_embed(self, category: str) -> discord.Embed:
         category = category.lower()
         if category == "news":
-            embed = discord.Embed(title="MiaSitas Help Menu", url="https://discord.com/channels/811542332678996008/811909963718459392/1069971173116481636", color=Config().embed_color)
+            embed = discord.Embed(title="Menu Trợ giúp MiaSitas", url="https://discord.com/channels/811542332678996008/811909963718459392/1069971173116481636", color=Config().embed_color)
             embed.add_field(
-                name=f"Available Categories: [{2 + len(self.categories)}]",
-                value="```py\n👉 News\n2. Tutorial\n{}```".format("".join(f"{i}. {c}\n" for i, c in enumerate(self.categories, start=3))),
+                name=f"Danh mục có sẵn: [{2 + len(self.categories)}]",
+                value="```py\n👉 Tin mới\n2. Hướng dẫn\n{}```".format("".join(f"{i}. {c}\n" for i, c in enumerate(self.categories, start=3))),
                 inline=True
             )
 
@@ -88,8 +88,8 @@ class HelpView(discord.ui.View):
             
             return embed
 
-        embed = discord.Embed(title=f"Category: {category.capitalize()}", color=Config().embed_color)
-        embed.add_field(name=f"Categories: [{2 + len(self.categories)}]", value="```py\n" + "\n".join(("👉 " if c == category.capitalize() else f"{i}. ") + c for i, c in enumerate(['News', 'Tutorial'] + self.categories, start=1)) + "```", inline=True)
+        embed = discord.Embed(title=f"Danh mục: {category.capitalize()}", color=Config().embed_color)
+        embed.add_field(name=f"Danh mục: [{2 + len(self.categories)}]", value="```py\n" + "\n".join(("👉 " if c == category.capitalize() else f"{i}. ") + c for i, c in enumerate(['Tin mới', 'Hướng dẫn'] + self.categories, start=1)) + "```", inline=True)
 
         if category == 'tutorial':
             embed.description = "Có thể xem qua video này để biết được các lệnh cơ bản(do owner Vocard thực hiện)."
@@ -100,7 +100,7 @@ class HelpView(discord.ui.View):
             commands = [command for command in cog.walk_commands()]
             embed.description = cog.description
             embed.add_field(
-                name=f"{category} Commands: [{len(commands)}]",
+                name=f"Lệnh {category}: [{len(commands)}]",
                 value="```{}```".format("".join(f"/{command.qualified_name}\n" for command in commands if not command.qualified_name == cog.qualified_name))
             )
 

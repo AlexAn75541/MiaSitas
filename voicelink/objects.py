@@ -75,8 +75,8 @@ class Track:
         self.info: dict = info
 
         self.identifier: str = info.get("identifier")
-        self.title: str = info.get("title", "Unknown")
-        self.author: str = info.get("author", "Unknown")
+        self.title: str = info.get("title", "Không rõ")
+        self.author: str = info.get("author", "Không rõ")
         self.uri: str = info.get("uri", "https://discord.com/application-directory/605618911471468554")
         self.source: str = info.get("sourceName", extract(self.uri).domain)
         self._search_type: SearchType = search_type

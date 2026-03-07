@@ -79,8 +79,8 @@ class Vocard(commands.Bot):
         if message.content.strip() == self.user.mention and not message.mention_everyone:
             prefix = await self.command_prefix(self, message)
             if not prefix:
-                return await message.channel.send("I don't have a bot prefix set.")
-            return await message.channel.send(f"My prefix is `{prefix}`")
+                return await message.channel.send("Tôi chưa được đặt prefix.")
+            return await message.channel.send(f"Prefix của tôi là `{prefix}`")
 
         # Fetch guild settings and check if the mesage is in the music request channel
         settings = await MongoDBHandler.get_settings(message.guild.id)
@@ -210,13 +210,13 @@ class Vocard(commands.Bot):
         elif isinstance(error, (commands.MissingRequiredArgument, commands.MissingRequiredAttachment)):
             command = f"{ctx.prefix}" + (f"{ctx.command.parent.qualified_name} " if ctx.command.parent else "") + f"{ctx.command.name} {ctx.command.signature}"
             position = command.find(f"<{ctx.current_parameter.name}>") + 1
-            description = f"**Correct Usage:**\n```{command}\n" + " " * position + "^" * len(ctx.current_parameter.name) + "```\n"
+            description = f"**Cách dùng đúng:**\n```{command}\n" + " " * position + "^" * len(ctx.current_parameter.name) + "```\n"
             if ctx.command.aliases:
-                description += f"**Aliases:**\n`{', '.join([f'{ctx.prefix}{alias}' for alias in ctx.command.aliases])}`\n\n"
-            description += f"**Description:**\n{ctx.command.help}\n\u200b"
+                description += f"**Tên thay thế:**\n`{', '.join([f'{ctx.prefix}{alias}' for alias in ctx.command.aliases])}`\n\n"
+            description += f"**Mô tả:**\n{ctx.command.help}\n\u200b"
 
             embed = discord.Embed(description=description, color=bot_config.embed_color)
-            embed.set_footer(icon_url=ctx.me.display_avatar.url, text=f"More Help: {bot_config.invite_link}")
+            embed.set_footer(icon_url=ctx.me.display_avatar.url, text=f"Hỗ trợ thêm: {bot_config.invite_link}")
             return await ctx.reply(embed=embed)
 
         elif not issubclass(error.__class__, VoicelinkException):
@@ -237,7 +237,7 @@ class CommandCheck(discord.app_commands.CommandTree):
 
             channel_perm = interaction.channel.permissions_for(interaction.guild.me)
             if not channel_perm.read_messages or not channel_perm.send_messages:
-                await interaction.response.send_message("I don't have permission to read or send messages in this channel.")
+                await interaction.response.send_message("Tôi không có quyền đọc hoặc gửi tin nhắn trong kênh này.")
                 return False
             
         return True

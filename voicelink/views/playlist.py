@@ -162,24 +162,24 @@ class PlaylistView(PaginationView):
         view: PlaylistViewManager = self.primary_view.change_view("home")
         await interaction.response.edit_message(embed=view.build_embed(), view=view)
     
-    @discord.ui.button(label="Play", custom_id="play", style=discord.ButtonStyle.green)
+    @discord.ui.button(label="Phát", custom_id="play", style=discord.ButtonStyle.green)
     async def play_all(self, interaction: discord.Interaction[commands.Bot], button: discord.ui.Button) -> None:
         await interaction.response.defer()
         cmd = interaction.client.get_command("playlist play")
         await cmd(self.primary_view.ctx, self.name)
     
-    @discord.ui.button(label="Share", custom_id="share", style=discord.ButtonStyle.gray)
+    @discord.ui.button(label="Chia sẻ", custom_id="share", style=discord.ButtonStyle.gray)
     async def share(self, interaction: discord.Interaction[commands.Bot], button: discord.ui.Button) -> None:
         modal = BaseModal(
-            title="Share Playlist",
+            title="Chia sẻ Playlist",
             custom_id="share_modal",
             items=[
                 discord.ui.Label(
-                    text="User to share with",
-                    description="Select a user to share with",
+                    text="Người dùng để chia sẻ",
+                    description="Chọn người dùng để chia sẻ",
                     component=discord.ui.UserSelect(
                         custom_id="user_select",
-                        placeholder="Select a user to share with",
+                        placeholder="Chọn người dùng để chia sẻ",
                         required=True
                     ),
                 )
@@ -194,13 +194,13 @@ class PlaylistView(PaginationView):
         
         await interaction.client.get_command("playlist share")(self.primary_view.ctx, user[0], self.name)
 
-    @discord.ui.button(label="Export", custom_id="export", style=discord.ButtonStyle.gray)
+    @discord.ui.button(label="Xuất", custom_id="export", style=discord.ButtonStyle.gray)
     async def export(self, interaction: discord.Interaction[commands.Bot], button: discord.ui.Button) -> None:
         await interaction.response.defer()
         cmd = interaction.client.get_command("playlist export")
         await cmd(self.primary_view.ctx, self.name)
 
-    @discord.ui.button(label="Delete", custom_id="delete", style=discord.ButtonStyle.red)
+    @discord.ui.button(label="Xóa", custom_id="delete", style=discord.ButtonStyle.red)
     async def delete(self, interaction: discord.Interaction[commands.Bot], button: discord.ui.Button) -> None:
         await interaction.response.defer()
         cmd = interaction.client.get_command("playlist delete")

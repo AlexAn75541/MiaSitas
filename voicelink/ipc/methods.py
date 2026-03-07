@@ -44,9 +44,9 @@ def require_permission(only_admin: bool = False):
     def decorator(func) -> callable:
         async def wrapper(player: Player, member: Member, dict: Dict) -> Optional[Dict]:
             if only_admin and not member.guild_permissions.manage_guild:
-                return error_msg("Only the admins may use this function!", user_id=member.id)
+                return error_msg("Chỉ quản trị viên mới có thể sử dụng chức năng này!", user_id=member.id)
             if not player.is_privileged(member):
-                return error_msg("Only the DJ or admins may use this function!", user_id=member.id)
+                return error_msg("Chỉ DJ hoặc quản trị viên mới có thể sử dụng chức năng này!", user_id=member.id)
             return await func(player, member, dict)
         return wrapper
     return decorator
@@ -393,7 +393,7 @@ async def updatePlaylist(bot: commands.Bot, data: Dict) -> Dict:
     _type = data.get("type")
     
     if not playlist_id and not _type == "createPlaylist":
-        return error_msg("Unable to process this request without a playlist ID.", user_id=user_id, level="error")
+        return error_msg("Không thể xử lý yêu cầu này mà không có ID playlist.", user_id=user_id, level="error")
     
     max_p, max_t, _ = Config().get_playlist_config()
     if _type == "createPlaylist":
@@ -402,7 +402,7 @@ async def updatePlaylist(bot: commands.Bot, data: Dict) -> Dict:
             return {
                 "op": "updatePlaylist",
                 "status": "error",
-                "msg": f"You must enter name for this field!",
+                "msg": f"Bạn phải nhập tên cho trường này!",
                 "field": "playlistName",
                 "userId": str(user_id)
             }
@@ -412,7 +412,7 @@ async def updatePlaylist(bot: commands.Bot, data: Dict) -> Dict:
             return {
                 "op": "updatePlaylist",
                 "status": "error",
-                "msg": f"You cannot create more than '{max_p}' playlists!",
+                "msg": f"Bạn không thể tạo nhiều hơn '{max_p}' playlist!",
                 "field": "playlistName",
                 "userId": str(user_id)
             }
@@ -422,7 +422,7 @@ async def updatePlaylist(bot: commands.Bot, data: Dict) -> Dict:
                 return {
                     "op": "updatePlaylist",
                     "status": "error",
-                    "msg": f"Playlist '{name}' already exists.",
+                    "msg": f"Playlist '{name}' đã tồn tại.",
                     "field": "playlistName",
                     "userId": str(user_id)
                 }
@@ -433,7 +433,7 @@ async def updatePlaylist(bot: commands.Bot, data: Dict) -> Dict:
                 return {
                     "op": "updatePlaylist",
                     "status": "error",
-                    "msg": f"Please enter a valid link or public playlist link.",
+                    "msg": f"Vui lòng nhập liên kết hợp lệ hoặc liên kết playlist công khai.",
                     "field": "playlistUrl",
                     "userId": str(user_id)
                 }
@@ -445,7 +445,7 @@ async def updatePlaylist(bot: commands.Bot, data: Dict) -> Dict:
             "op": "updatePlaylist",
             "status": "created",
             "playlistId": assigned_playlist_id,
-            "msg": f"You have created '{name}' playlist.",
+            "msg": f"Bạn đã tạo playlist '{name}'.",
             "userId": str(user_id),
             "data": data
         }
@@ -462,7 +462,7 @@ async def updatePlaylist(bot: commands.Bot, data: Dict) -> Dict:
             "op": "updatePlaylist",
             "status": "deleted",
             "playlistId": playlist_id,
-            "msg": f"You have removed playlist '{playlist['name']}'",
+            "msg": f"Bạn đã xóa playlist '{playlist['name']}'",
             "userId": str(user_id)
         }
     
@@ -472,7 +472,7 @@ async def updatePlaylist(bot: commands.Bot, data: Dict) -> Dict:
             return {
                 "op": "updatePlaylist",
                 "status": "error",
-                "msg": f"You must enter name for this field!",
+                "msg": f"Bạn phải nhập tên cho trường này!",
                 "field": "playlistName",
                 "userId": str(user_id)
             }
@@ -483,7 +483,7 @@ async def updatePlaylist(bot: commands.Bot, data: Dict) -> Dict:
                 return {
                     "op": "updatePlaylist",
                     "status": "error",
-                    "msg": f"Playlist '{data['name']}' already exists.",
+                    "msg": f"Playlist '{data['name']}' đã tồn tại.",
                     "field": "playlistName",
                     "userId": str(user_id)
                 }
@@ -494,7 +494,7 @@ async def updatePlaylist(bot: commands.Bot, data: Dict) -> Dict:
             "status": "renamed",
             "name": name,
             "playlistId": playlist_id,
-            "msg": f"You have renamed the playlist to '{name}'.",
+            "msg": f"Bạn đã đổi tên playlist thành '{name}'.",
             "field": "playlistName",
             "userId": str(user_id)
         }
@@ -502,19 +502,19 @@ async def updatePlaylist(bot: commands.Bot, data: Dict) -> Dict:
     elif _type == "addTrack":
         track_id = data.get("trackId")
         if not track_id:
-            return error_msg("No track ID could be located.", user_id=user_id, level='error')
+            return error_msg("Không tìm thấy ID bài hát.", user_id=user_id, level='error')
         
         playlist = await _getPlaylist(user_id, playlist_id)
         if playlist['type'] in ['share', 'link']:
-            return error_msg("You cannot add songs to a linked playlist through Vocard.", user_id=user_id, level='error')
+            return error_msg("Bạn không thể thêm bài hát vào playlist liên kết qua MiaSitas.", user_id=user_id, level='error')
         
         max_p, max_t, _ = Config().get_playlist_config()
         if len(playlist['tracks']) >= max_t:
-            return error_msg(f"You have reached the limit! You can only add {max_t} songs to your playlist.", user_id=user_id)
+            return error_msg(f"Bạn đã đạt giới hạn! Bạn chỉ có thể thêm {max_t} bài hát vào playlist.", user_id=user_id)
 
         decoded_track = Track(track_id=track_id, info=Track.decode(track_id), requester=None)
         if decoded_track.is_stream:
-            return error_msg("You are not allowed to add streaming videos to your playlist.", user_id=user_id)
+            return error_msg("Bạn không được phép thêm video trực tiếp vào playlist.", user_id=user_id)
         
         await MongoDBHandler.update_user(user_id, {"$push": {f'playlist.{playlist_id}.tracks': track_id}})
         return {
@@ -522,27 +522,27 @@ async def updatePlaylist(bot: commands.Bot, data: Dict) -> Dict:
             "status": "addTrack",
             "playlistId": playlist_id,
             "trackId": track_id,
-            "msg": f"Added {decoded_track.title} into '{playlist['name']}' playlist.",
+            "msg": f"Đã thêm {decoded_track.title} vào playlist '{playlist['name']}'.",
             "userId": str(user_id)
         }
         
     elif _type == "removeTrack":
         track_id, track_position = data.get("trackId"), data.get("trackPosition", 0)
         if not track_id:
-            return error_msg("No track ID could be located.", user_id=user_id, level='error')
+            return error_msg("Không tìm thấy ID bài hát.", user_id=user_id, level='error')
         
         playlist = await _getPlaylist(user_id, playlist_id)
         if not playlist:
-            return error_msg("Playlist not found!", user_id=user_id, level='error')
+            return error_msg("Không tìm thấy playlist!", user_id=user_id, level='error')
         
         if playlist['type'] in ['share', 'link']:
-            return error_msg("You cannot remove songs from a linked playlist through Vocard.", user_id=user_id, level='error')
+            return error_msg("Bạn không thể xóa bài hát khỏi playlist liên kết qua MiaSitas.", user_id=user_id, level='error')
         
         if not 0 <= track_position < len(playlist['tracks']):
-            return error_msg("Cannot find the position from your playlist.", user_id=user_id, level="error")
+            return error_msg("Không tìm thấy vị trí trong playlist của bạn.", user_id=user_id, level="error")
 
         if playlist['tracks'][track_position] != track_id:
-            return error_msg("Something wrong while removing the track from your playlist.", user_id=user_id, level='error')
+            return error_msg("Đã xảy ra lỗi khi xóa bài hát khỏi playlist của bạn.", user_id=user_id, level='error')
         
         await MongoDBHandler.update_user(user_id, {"$pull": {f'playlist.{playlist_id}.tracks': playlist['tracks'][track_position]}})
         
@@ -553,7 +553,7 @@ async def updatePlaylist(bot: commands.Bot, data: Dict) -> Dict:
             "playlistId": playlist_id,
             "trackPosition": track_position,
             "trackId": track_id,
-            "msg": f"Removed '{decoded_track['title']}' from '{playlist['name']}' playlist.",
+            "msg": f"Đã xóa '{decoded_track['title']}' khỏi playlist '{playlist['name']}'.",
             "userId": str(user_id)
         }
 
@@ -562,7 +562,7 @@ async def updatePlaylist(bot: commands.Bot, data: Dict) -> Dict:
         is_accept = data.get("accept", False)
 
         if is_accept and len(list(user.get("playlist").keys())) >= max_p:
-            return error_msg(f"You cannot create more than '{max_p}' playlists!", user_id=user_id, level = "error")
+            return error_msg(f"Bạn không thể tạo nhiều hơn '{max_p}' playlist!", user_id=user_id, level = "error")
 
         info = data.get("referId", "").split("-")
         sender_id, refer_id = info[0], info[1]
@@ -577,7 +577,7 @@ async def updatePlaylist(bot: commands.Bot, data: Dict) -> Dict:
             if is_accept:
                 share_playlists = await MongoDBHandler.get_user(mail["sender"], d_type="playlist")
                 if refer_id not in share_playlists:
-                    return error_msg("The shared playlist couldn’t be found. It’s possible that the user has already deleted it.", user_id=user_id)
+                    return error_msg("Không tìm thấy playlist được chia sẻ. Có thể người dùng đã xóa nó.", user_id=user_id)
                 
                 assigned_playlist_id = _assign_playlist_id(list(user.get("playlist", []).keys()))
                 playlist_name = f"Share{time.strftime('%M%S', time.gmtime(int(mail['time'])))}"
@@ -598,7 +598,7 @@ async def updatePlaylist(bot: commands.Bot, data: Dict) -> Dict:
 
                 payload.update({
                     "playlistId": assigned_playlist_id,
-                    "msg": f"You have created '{playlist_name}' playlist.",
+                    "msg": f"Bạn đã tạo playlist '{playlist_name}'.",
                     "data": share_playlist,
                 })
 
@@ -626,14 +626,14 @@ async def getSettings(bot: commands.Bot, data: Dict) -> Dict:
 
     guild = bot.get_guild(guild_id)
     if not guild:
-        return error_msg("Vocard don't have access to requested guild.", user_id=user_id, level="error")
+        return error_msg("MiaSitas không có quyền truy cập máy chủ yêu cầu.", user_id=user_id, level="error")
 
     member = guild.get_member(user_id)
     if not member:
-        return error_msg("You are not in the requested guild.", user_id=user_id, level="error")
+        return error_msg("Bạn không ở trong máy chủ yêu cầu.", user_id=user_id, level="error")
     
     if not member.guild_permissions.manage_guild:
-        return error_msg("You don't have permission to access the settings.", user_id=user_id, level='error')
+        return error_msg("Bạn không có quyền truy cập cài đặt.", user_id=user_id, level='error')
     
     settings = await MongoDBHandler.get_settings(guild_id)
     if "dj" in settings:
@@ -681,14 +681,14 @@ async def updateSettings(bot: commands.Bot, data: Dict) -> None:
 
     guild = bot.get_guild(guild_id)
     if not guild:
-        return error_msg("Vocard don't have access to required guild.", user_id=user_id, level="error")
+        return error_msg("MiaSitas không có quyền truy cập máy chủ yêu cầu.", user_id=user_id, level="error")
 
     member = guild.get_member(user_id)
     if not member:
-        return error_msg("You are not in the required guild.", user_id=user_id, level="error")
+        return error_msg("Bạn không ở trong máy chủ yêu cầu.", user_id=user_id, level="error")
     
     if not member.guild_permissions.manage_guild:
-        return error_msg("You don't have permission to change the settings.", user_id=user_id, level='error')
+        return error_msg("Bạn không có quyền thay đổi cài đặt.", user_id=user_id, level='error')
     
     data = data.get("settings", {})
     if "dj" in data:

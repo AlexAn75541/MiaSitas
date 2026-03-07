@@ -375,7 +375,7 @@ class Tracks(discord.ui.Select):
         for index, track in enumerate(self.player.queue.tracks(), start=1):
             if index > min(max(btn_data.get("max_options", 10), 1), 25):
                 break
-            options.append(discord.SelectOption(label=f"{index}. {track.title[:40]}", description=f"{track.author[:30]} · " + ("Live" if track.is_stream else track.formatted_length), emoji=track.emoji))
+            options.append(discord.SelectOption(label=f"{index}. {track.title[:40]}", description=f"{track.author[:30]} · " + ("Trực tiếp" if track.is_stream else track.formatted_length), emoji=track.emoji))
 
         super().__init__(
             placeholder=self.player._ph.replace(btn_data.get("label"), {}),
@@ -399,7 +399,7 @@ class Effects(discord.ui.Select):
 
         self.player: voicelink.Player = player
         
-        options = [discord.SelectOption(label="None", value="None")]
+        options = [discord.SelectOption(label="Không", value="None")]
         for name in voicelink.Filters.get_available_filters():
             options.append(discord.SelectOption(label=name.capitalize(), value=name))
 
@@ -483,6 +483,6 @@ class InteractiveController(discord.ui.View):
     async def on_error(self, interaction: discord.Interaction, error: Exception, item: discord.ui.Item) -> None:
         if isinstance(error, ButtonOnCooldown):
             sec = int(error.retry_after)
-            return await interaction.response.send_message(f"Bạn đang ở cooldown trong {sec} giây{'' if sec == 1 else 's'}!", ephemeral=True)
+            return await interaction.response.send_message(f"Bạn đang ở cooldown trong {sec} giây{'s' if sec != 1 else ''}!", ephemeral=True)
         
         super().on_error(interaction, error, item)

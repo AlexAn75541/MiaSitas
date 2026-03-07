@@ -323,7 +323,7 @@ async def dispatch_message(
         The sent message object, or None.
     """
     if not content:
-        content = "No content provided."
+        content = "Không có nội dung."
 
     # Determine the text to send
     embed = content if isinstance(content, discord.Embed) else None
@@ -402,6 +402,6 @@ async def send_localized_message(
         except (IndexError, KeyError):
             formatted_text = localized_text
     else:
-        formatted_text = "Translation not found."
+        formatted_text = "Không tìm thấy bản dịch."
 
     return await dispatch_message(ctx, content=formatted_text, **kwargs)

@@ -271,7 +271,7 @@ async def _process_playlist(ctx: commands.Context, playlist_data: dict, playlist
 class Playlists(commands.Cog, name="playlist"):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
-        self.description = "This is the Vocard playlist system. You can save your favorites and use Vocard to play on any server."
+        self.description = "Đây là hệ thống playlist của MiaSitas. Bạn có thể lưu các bài hát yêu thích và dùng MiaSitas để phát trên bất kỳ máy chủ nào."
 
     async def playlist_autocomplete(self, interaction: discord.Interaction, current: str) -> list:
         playlists_raw: dict[str, dict] = await MongoDBHandler.get_user(interaction.user.id, d_type='playlist')
@@ -292,13 +292,13 @@ class Playlists(commands.Cog, name="playlist"):
 
     @playlist.command(name="play", aliases=get_aliases("play"))
     @app_commands.describe(
-        name="Input the name of your custom playlist",
-        value="Play the specific track from your custom playlist."
+        name="Nhập tên playlist của bạn",
+        value="Phát bài hát cụ thể từ playlist của bạn."
     )
     @app_commands.autocomplete(name=playlist_autocomplete)
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def play(self, ctx: commands.Context, name: str = None, value: int = None) -> None:
-        "Play all songs from your favorite playlist."
+        "Phát tất cả bài hát từ playlist yêu thích của bạn."
         result = await check_playlist(ctx, name.lower() if name else None)
 
         if not result['playlist']:
@@ -337,7 +337,7 @@ class Playlists(commands.Cog, name="playlist"):
     @playlist.command(name="view", aliases=get_aliases("view"))
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def view(self, ctx: commands.Context) -> None:
-        """List all your playlists and all songs in your favourite playlist."""
+        """Liệt kê tất cả playlist của bạn và các bài hát trong playlist yêu thích."""
         user_playlists = await check_playlist(ctx, full=True)
         max_p, _, _ = Config().get_playlist_config()
         
@@ -366,12 +366,12 @@ class Playlists(commands.Cog, name="playlist"):
 
     @playlist.command(name="create", aliases=get_aliases("create"))
     @app_commands.describe(
-        name="Give a name to your playlist.",
-        link="Provide a playlist link if you are creating link playlist."
+        name="Đặt tên cho playlist của bạn.",
+        link="Cung cấp liên kết playlist nếu bạn tạo playlist dạng liên kết."
     )
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def create(self, ctx: commands.Context, name: str, link: str = None):
-        "Create your custom playlist."
+        "Tạo playlist tùy chỉnh của bạn."
         if len(name) > 10:
             return await send_localized_message(ctx, 'playlist.errors.nameOverLimit', ephemeral=True)
         
@@ -394,11 +394,11 @@ class Playlists(commands.Cog, name="playlist"):
         await send_localized_message(ctx, "playlist.actions.created", name)
 
     @playlist.command(name="delete", aliases=get_aliases("delete"))
-    @app_commands.describe(name="The name of the playlist.")
+    @app_commands.describe(name="Tên của playlist.")
     @app_commands.autocomplete(name=playlist_autocomplete)
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def delete(self, ctx: commands.Context, name: str):
-        "Delete your custom playlist."
+        "Xóa playlist tùy chỉnh của bạn."
         result = await check_playlist(ctx, name.lower(), share=False)
         if not result['playlist']:
             return await send_localized_message(ctx, "playlist.errors.notFound", name, ephemeral=True)
@@ -413,13 +413,13 @@ class Playlists(commands.Cog, name="playlist"):
 
     @playlist.command(name="share", aliases=get_aliases("share"))
     @app_commands.describe(
-        member="The user id of your friend.",
-        name="The name of the playlist that you want to share."
+        member="ID người dùng của bạn bè.",
+        name="Tên playlist bạn muốn chia sẻ."
     )
     @app_commands.autocomplete(name=playlist_autocomplete)
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def share(self, ctx: commands.Context, member: discord.Member, name: str):
-        "Share your custom playlist with your friends."
+        "Chia sẻ playlist với bạn bè."
         if member.id == ctx.author.id:
             return await send_localized_message(ctx, 'playlist.sharing.sendErrorPlayer', ephemeral=True)
         if member.bot:
@@ -448,8 +448,8 @@ class Playlists(commands.Cog, name="playlist"):
                 'sender': ctx.author.id, 
                 'referId': result['id'],
                 'time': time.time(),
-                'title': f'Playlist invitation from {ctx.author}',
-                'description': f"You are invited to use this playlist.\nPlaylist Name: {result['playlist']['name']}\nPlaylist type: {result['playlist']['type']}",
+                'title': f'Lời mời playlist từ {ctx.author}',
+                'description': f"Bạn được mời sử dụng playlist này.\nTên Playlist: {result['playlist']['name']}\nLoại Playlist: {result['playlist']['type']}",
                 'type': 'invite'
             }}}
         )
@@ -457,10 +457,10 @@ class Playlists(commands.Cog, name="playlist"):
 
     @playlist.command(name="permission", aliases=get_aliases("permission"))
     @app_commands.describe(
-        name="The name of the playlist.",
-        member="The user to grant or revoke permissions for.",
-        permission="The permission type: read, write, or remove.",
-        action="Whether to grant or revoke the permission."
+        name="Tên của playlist.",
+        member="Người dùng cần cấp hoặc thu hồi quyền.",
+        permission="Loại quyền: read, write, hoặc remove.",
+        action="Cấp hoặc thu hồi quyền."
     )
     @app_commands.choices(permission=[
         app_commands.Choice(name="read", value="read"),
@@ -474,7 +474,7 @@ class Playlists(commands.Cog, name="playlist"):
     @app_commands.autocomplete(name=playlist_autocomplete)
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def permission(self, ctx: commands.Context, member: discord.Member, name: str, permission: str, action: str):
-        "Grant or revoke permissions for a playlist."
+        "Cấp hoặc thu hồi quyền cho playlist."
         if member.id == ctx.author.id:
             return await send_localized_message(ctx, 'playlist.permissions.cannotModifySelf', ephemeral=True)
         if member.bot:
@@ -498,7 +498,7 @@ class Playlists(commands.Cog, name="playlist"):
             
             # Ensure user has read access first
             if permission != 'read' and member.id not in perm_type.get('read', []):
-                return await send_localized_message(ctx, f'You haven\'t shared your playlist to {member.mention}', member, ephemeral=True)
+                return await send_localized_message(ctx, f'Bạn chưa chia sẻ playlist với {member.mention}', member, ephemeral=True)
             
             await MongoDBHandler.update_user(ctx.author.id, {"$push": {f"playlist.{result['id']}.perms.{permission}": member.id}})
             return await send_localized_message(ctx, 'playlist.permissions.granted', member, permission, result['playlist']['name'])
@@ -521,13 +521,13 @@ class Playlists(commands.Cog, name="playlist"):
 
     @playlist.command(name="rename", aliases=get_aliases("rename"))
     @app_commands.describe(
-        name="The name of your playlist.",
-        newname="The new name of your playlist."
+        name="Tên playlist của bạn.",
+        newname="Tên mới của playlist."
     )
     @app_commands.autocomplete(name=playlist_autocomplete)
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def rename(self, ctx: commands.Context, name: str, newname: str) -> None:
-        "Rename your custom playlist."
+        "Đổi tên playlist tùy chỉnh của bạn."
         if len(newname) > 10:
             return await send_localized_message(ctx, 'playlist.errors.nameOverLimit', ephemeral=True)
         if name.lower() == newname.lower():
@@ -549,7 +549,7 @@ class Playlists(commands.Cog, name="playlist"):
     @playlist.command(name="inbox", aliases=get_aliases("inbox"))
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def inbox(self, ctx: commands.Context) -> None:
-        "Show your playlist invitation."
+        "Xem lời mời playlist của bạn."
         user = await MongoDBHandler.get_user(ctx.author.id)
         max_p, _, _ = Config().get_playlist_config()
 
@@ -582,12 +582,12 @@ class Playlists(commands.Cog, name="playlist"):
     @playlist.command(name="add", aliases=get_aliases("add"))
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     @app_commands.describe(
-        name="The name of the playlist.",
-        query="Input a query or a searchable link."
+        name="Tên của playlist.",
+        query="Nhập truy vấn hoặc liên kết có thể tìm kiếm."
     )
     @app_commands.autocomplete(name=playlist_autocomplete)
     async def add(self, ctx: commands.Context, name: str, query: str) -> None:
-        "Add tracks in to your custom playlist."
+        "Thêm bài hát vào playlist tùy chỉnh của bạn."
         result = await check_playlist(ctx, name.lower(), share=True, share_perm='write')
         if not result['playlist']:
             if result.get('error') == 'permission':
@@ -619,12 +619,12 @@ class Playlists(commands.Cog, name="playlist"):
     @playlist.command(name="remove", aliases=get_aliases("remove"))
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     @app_commands.describe(
-        name="The name of the playlist.",
-        position="Input a position from the playlist to be removed."
+        name="Tên của playlist.",
+        position="Nhập vị trí bài hát cần xóa từ playlist."
     )
     @app_commands.autocomplete(name=playlist_autocomplete)
     async def remove(self, ctx: commands.Context, name: str, position: int):
-        "Remove song from your favorite playlist."
+        "Xóa bài hát khỏi playlist yêu thích của bạn."
         result = await check_playlist(ctx, name.lower(), share=True, share_perm='remove')
         if not result['playlist']:
             if result.get('error') == 'permission':
@@ -647,7 +647,7 @@ class Playlists(commands.Cog, name="playlist"):
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     @app_commands.autocomplete(name=playlist_autocomplete)
     async def clear(self, ctx: commands.Context, name: str) -> None:
-        "Remove all songs from your favorite playlist."
+        "Xóa tất cả bài hát khỏi playlist yêu thích của bạn."
         result = await check_playlist(ctx, name.lower(), share=True, share_perm='remove')
         if not result['playlist']:
             if result.get('error') == 'permission':
@@ -666,7 +666,7 @@ class Playlists(commands.Cog, name="playlist"):
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     @app_commands.autocomplete(name=playlist_autocomplete)
     async def export(self, ctx: commands.Context, name: str) -> None:
-        "Exports the entire playlist to a text file"
+        "Xuất toàn bộ playlist ra tệp văn bản"
         result = await check_playlist(ctx, name.lower())
         if not result['playlist']:
             return await send_localized_message(ctx, 'playlist.errors.notFound', name, ephemeral=True)
@@ -697,7 +697,7 @@ class Playlists(commands.Cog, name="playlist"):
                 raw += ","
             total_length += track.length
 
-        temp = "!Remember do not change this file!\n------------->Info<-------------\nPlaylist: {} ({})\nRequester: {} ({})\nTracks: {} - {}\n------------>Tracks<------------\n".format(
+        temp = "!Nhớ đừng thay đổi tệp này!\n------------->Thông tin<-------------\nPlaylist: {} ({})\nNgười yêu cầu: {} ({})\nBài hát: {} - {}\n------------>Danh sách<------------\n".format(
             tracks['name'], result['playlist']['type'],
             ctx.author.display_name, ctx.author.id,
             len(tracks['tracks']), format_ms(total_length)
@@ -707,10 +707,10 @@ class Playlists(commands.Cog, name="playlist"):
         await ctx.send(content="", file=discord.File(StringIO(temp), filename=f"{tracks['name']}_playlist.txt"))
 
     @playlist.command(name="import", aliases=get_aliases("import"))
-    @app_commands.describe(name="Give a name to your playlist.")
+    @app_commands.describe(name="Đặt tên cho playlist của bạn.")
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def _import(self, ctx: commands.Context, name: str, attachment: discord.Attachment):
-        "Create your custom playlist."
+        "Tạo playlist tùy chỉnh của bạn."
         if len(name) > 10:
             return await send_localized_message(ctx, 'playlist.errors.nameOverLimit', ephemeral=True)
         

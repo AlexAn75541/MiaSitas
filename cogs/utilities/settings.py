@@ -11,11 +11,11 @@ APP_NAME = "Vocard"
 DEBUG = True
 
 class Settings(commands.Cog):
-    """Settings and configuration commands"""
+    """Các lệnh cài đặt và cấu hình"""
     
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.description = "Commands for managing bot settings"
+        self.description = "Các lệnh quản lý cài đặt bot"
 
     # Add your settings commands here
 
