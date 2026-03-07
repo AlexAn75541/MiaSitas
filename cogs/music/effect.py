@@ -217,7 +217,7 @@ class Effect(commands.Cog):
         await send_localized_message(ctx, "effects.added", effect.tag)
 
     @commands.hybrid_command(name="cleareffect", aliases=get_aliases("cleareffect"))
-    @app_commands.describe(effect=\"Xóa một hiệu ứng âm thanh cụ thể.\")
+    @app_commands.describe(effect="Xóa một hiệu ứng âm thanh cụ thể.")
     @app_commands.autocomplete(effect=effect_autocomplete)
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def cleareffect(self, ctx: commands.Context, effect: str = None) -> None:
