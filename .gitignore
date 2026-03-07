@@ -192,3 +192,10 @@ views/help copy.py
 TODO
 .DS_Store
 .DS_Store
+last-session.json
+.gitignore
+settings copy.json
+MiaSitas.code-workspace
+settings1.json
+.gitignore
+settings2.json
