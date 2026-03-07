@@ -52,7 +52,7 @@ from .objects import Track, Playlist
 from .filters import Filter, Filters
 from .enums import SearchType, LoopType, RequestMethod
 from .events import VoicelinkEvent, TrackEndEvent, TrackStartEvent, TrackExceptionEvent
-from .exceptions import VoicelinkException, FilterInvalidArgument, TrackInvalidPosition, FilterTagAlreadyInUse, DuplicateTrack
+from .exceptions import VoicelinkException, FilterInvalidArgument, TrackInvalidPosition, FilterTagAlreadyInUse, DuplicateTrack, NodeException
 from .placeholders import PlayerPlaceholder
 from .queue import Queue, QUEUE_TYPES
 from .mongodb import MongoDBHandler
@@ -352,8 +352,18 @@ class Player(VoiceProtocol):
             "sessionId": state['sessionId'],
             "channelId": str(self.channel.id),
         }
-        
-        await self.send(method=RequestMethod.PATCH, data={"voice": data})
+
+        try:
+            await self.send(method=RequestMethod.PATCH, data={"voice": data})
+        except NodeException as e:
+            # Some Lavalink versions reject unknown voice fields. Retry with legacy payload.
+            if "(400)" in str(e) and "channelId" in data:
+                fallback_data = data.copy()
+                fallback_data.pop("channelId", None)
+                await self.send(method=RequestMethod.PATCH, data={"voice": fallback_data})
+            else:
+                raise
+
         self._logger.debug(f"Player in {self.guild.name}({self.guild.id}) dispatched voice update to {state['event']['endpoint']} with data {data}")
 
     async def on_voice_server_update(self, data: dict):

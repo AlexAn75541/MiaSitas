@@ -260,7 +260,10 @@ class Node:
             json=data
         ) as resp:
             if resp.status >= 300:
-                raise NodeException(f"Getting errors from Lavalink REST api")
+                err_text = await resp.text()
+                raise NodeException(
+                    f"Lavalink REST api error ({resp.status}) on {method.value} {uri}: {err_text[:500]}"
+                )
             
             if method == RequestMethod.DELETE:
                 return await resp.json(content_type=None)
