@@ -40,7 +40,7 @@ class LangHandler:
 
     _langs: dict[str, dict[str, str]] = {}
     _local_langs: dict[str, dict[str, str]] = {}
-    _default_lang: str = "EN"
+    _default_lang: str = "VN"
 
     @classmethod
     def init(
