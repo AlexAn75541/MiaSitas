@@ -248,7 +248,9 @@ async def get_prefix(bot: commands.Bot, message: discord.Message) -> str:
     return prefix if prefix is not None else ""
 
 # Loading settings and logger
-bot_config = Config(func.open_json("settings.json"))
+# Prefer /data/settings.json (MCManager mount) over bundled settings.json
+_settings_path = "/data/settings.json" if os.path.isfile("/data/settings.json") else "settings.json"
+bot_config = Config(func.open_json(_settings_path))
 Lang_handler = LangHandler.init()
 
 LOG_SETTINGS = bot_config.logging

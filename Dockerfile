@@ -29,5 +29,13 @@ COPY --from=builder /usr/local/lib/python3.15/site-packages /usr/local/lib/pytho
 # Copy the application code
 COPY . .
 
-# Run the application
-CMD ["python", "-u", "main.py"]
+# Create /data directory for MCManager-mounted user data (settings.json, logs, etc.)
+RUN mkdir -p /data
+
+# Entrypoint: overlay /data files onto /app before starting
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
+ENV PYTHONUNBUFFERED=1
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
