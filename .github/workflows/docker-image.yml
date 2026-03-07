@@ -5,6 +5,7 @@ on:
     tags:
       - '*'
     branches:
+      - main
       - aio-beta
     paths-ignore:
       - '**.md'
@@ -39,7 +40,8 @@ jobs:
           images: ghcr.io/${{ env.REPO_OWNER }}/miasitas
           tags: |
             type=ref,event=tag
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/aio-beta' }}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=nightly,enable=${{ github.ref == 'refs/heads/aio-beta' }}
           flavor: |
             latest=false
       
