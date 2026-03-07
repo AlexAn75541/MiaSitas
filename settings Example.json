@@ -40,6 +40,7 @@
     "bot_access_user": [],
     "embed_color":"0xb3b3b3",
     "default_max_queue": 1000,
+    "default_search_platform": "youtube",
     "lyrics_platform": "lrclib",
     "ipc_client": {
         "host": "127.0.0.1",
@@ -47,6 +48,11 @@
         "password": "YOUR_PASSWORD",
         "secure": false,
         "enable": false
+    },
+    "playlist_settings": {
+        "max_playlist": 5,
+        "max_tracks_per_playlist": 500,
+        "default_playlist_name": "Favourite"
     },
     "sources_settings": {
         "youtube": {
@@ -117,11 +123,45 @@
                 "color": "@@default_embed_color@@"
             }
         },
-        "default_buttons": [
-            ["back", "resume", "skip", {"stop": "red"}, "add"],
-            ["tracks"]
-        ],
-        "disableButtonText": false
+        "buttons": [
+            {
+                "back": {
+                    "emoji": "⏮️",
+                    "label": "@@t_player.buttons.back@@"
+                },
+                "play-pause": {
+                    "states": {
+                        "pause": {
+                            "emoji": "⏸️",
+                            "label": "@@t_player.buttons.pause@@"
+                        },
+                        "resume": {
+                            "emoji": "▶️",
+                            "label": "@@t_player.buttons.resume@@"
+                        }
+                    }
+                },
+                "skip": {
+                    "emoji": "⏭️",
+                    "label": "@@t_player.buttons.skip@@"
+                },
+                "stop": {
+                    "emoji": "⏹️",
+                    "label": "@@t_player.buttons.leave@@",
+                    "style": "red"
+                },
+                "add-fav": {
+                    "emoji": "❤️",
+                    "label": ""
+                }
+            },
+            {
+                "tracks": {
+                    "label": "@@t_player.dropdown.trackSelect@@",
+                    "max_options": 10
+                }
+            }
+        ]
     },
     "default_voice_status_template": "{{@@track_name@@ != 'None' ?? @@track_source_emoji@@ Now Playing: @@track_name@@ // Waiting for song requests}}",
     "cooldowns": {

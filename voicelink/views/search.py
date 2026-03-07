@@ -20,13 +20,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-from __future__ import annotations
 
 import discord
 
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    from voicelink import Track
+from ..objects import Track
 
 class SearchDropdown(discord.ui.Select):
     def __init__(self, tracks: list[Track], texts: list[str]) -> None:
@@ -56,9 +53,6 @@ class SearchView(discord.ui.View):
         self.response: discord.Message = None
         self.values: list[str] = None
         self.add_item(SearchDropdown(tracks, texts))
-
-    async def on_error(self, error, item, interaction):
-        return
 
     async def on_timeout(self):
         for child in self.children:

@@ -27,232 +27,134 @@ import os
 import aiohttp
 import update
 import logging
-import voicelink
 import function as func
 
 from discord.ext import commands
-from ipc import IPCClient
-from motor.motor_asyncio import AsyncIOMotorClient
 from logging.handlers import TimedRotatingFileHandler
-from addons import Settings
+from voicelink import Config, LangHandler, MongoDBHandler, IPCClient, VoicelinkException
+from voicelink.utils import dispatch_message
 
 class Translator(discord.app_commands.Translator):
+    MISSING_TRANSLATOR: dict[str, list[str]] = {}
+
     async def load(self):
         func.logger.info("Loaded Translator")
-
+        
     async def unload(self):
         func.logger.info("Unload Translator")
-
-    async def translate(self, string: discord.app_commands.locale_str, locale: discord.Locale, context: discord.app_commands.TranslationContext):
-        locale_key = str(locale)
         
-        if locale_key in func.LOCAL_LANGS:
-            translated_text = func.LOCAL_LANGS[locale_key].get(string.message)
+    async def translate(
+        self,
+        string: discord.app_commands.locale_str,
+        locale: discord.Locale,
+        context: discord.app_commands.TranslationContext
+    ) -> str | None:
+        locale_key = str(locale).upper()
+        local_translations = LangHandler._local_langs.get(locale_key)
+        if not local_translations:
+            return None
 
-            if translated_text is None:
-                missing_translations = func.MISSING_TRANSLATOR.setdefault(locale_key, [])
-                if string.message not in missing_translations:
-                    missing_translations.append(string.message)
-            
+        translated_text = local_translations.get(string.message)
+        if translated_text is not None:
             return translated_text
-        
+
+        missing = self.MISSING_TRANSLATOR.setdefault(locale_key, [])
+        if string.message not in missing:
+            missing.append(string.message)
+
         return None
 
 class Vocard(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
-        # Add additional attributes for multipurpose features
-        self.ipc: IPCClient
-        self.uptime = discord.utils.utcnow()
-        self.command_uses = 0
-        self.error_counts = 0
 
-    async def setup_hook(self) -> None:
-        func.logger.info("Starting bot setup...")
-
-        # Initialize language system
-        func.langs_setup()
-        func.logger.info("✓ Language system initialized")
-
-        # Connect to MongoDB
-        await self.connect_db()
-
-        # Set translator and clear commands
-        await self.tree.set_translator(Translator())
-        self.tree.clear_commands(guild=None)
-        func.logger.info("✓ Translator configured and commands cleared")
-
-        # Load cogs with detailed logging
-        cog_categories = {
-            'music': ['basic', 'effect', 'playlist', 'listeners'],
-            'utilities': ['general', 'settings']
-        }
-
-        total_cogs = sum(len(cogs) for cogs in cog_categories.values())
-        loaded_cogs = 0
-
-        # Load all cogs first
-        for category, cogs in cog_categories.items():
-            for cog in cogs:
-                try:
-                    await self.load_extension(f"cogs.{category}.{cog}")
-                    loaded_cogs += 1
-                    func.logger.info(f"✓ [{loaded_cogs}/{total_cogs}] Loaded {cog} from {category}")
-                except Exception as e:
-                    func.logger.error(f"✗ Failed to load {cog} from {category}: {e}")
-
-        # Force sync commands
-        try:
-            func.logger.info("Syncing commands globally...")
-            synced = await self.tree.sync()
-            func.logger.info(f"✓ Synced {len(synced)} commands globally")
-            
-            # Log registered commands
-            for cmd in synced:
-                func.logger.info(f"Registered command: /{cmd.name}")
-                
-            # Verify command registration
-            if not synced:
-                func.logger.warning("No commands were synced! Check cog implementations.")
-                
-        except Exception as e:
-            func.logger.error(f"Failed to sync commands: {e}", exc_info=True)
-
-    async def on_guild_join(self, guild: discord.Guild):
-        """Sync commands when joining new guild"""
-        try:
-            await self.tree.sync(guild=guild)
-            func.logger.info(f"Synced commands for new guild: {guild.name} ({guild.id})")
-        except Exception as e:
-            func.logger.error(f"Failed to sync commands for guild {guild.id}: {e}")
-
-    async def verify_commands(self):
-        """Verify command registration status"""
-        try:
-            commands = await self.tree.fetch_commands()
-            func.logger.info(f"Verified {len(commands)} global commands registered")
-            return len(commands) > 0
-        except Exception as e:
-            func.logger.error(f"Failed to verify commands: {e}")
-            return False
-
-    async def sync_commands(self):
-        """Synchronize commands with detailed logging"""
-        try:
-            func.logger.info("Starting command sync process...")
-        
-            # Step 1: Clear existing commands
-            func.logger.debug("Clearing existing commands...")
-            self.tree.clear_commands(guild=None)
-            func.logger.info("✓ Cleared all existing commands")
-
-            # Step 2: Copy commands to sync
-            commands_to_sync = self.tree._global_commands.copy()
-            func.logger.debug(f"Found {len(commands_to_sync)} commands to sync")
-        
-            # Step 3: Sync globally
-            func.logger.debug("Starting global sync...")
-            synced = await self.tree.sync()
-            func.logger.info(f"✓ Synced {len(synced)} commands globally")
-
-            # Step 4: Detailed command logging
-            for cmd in synced:
-                func.logger.debug(f"Registered command: /{cmd.name} - {cmd.description}")
-
-            # Step 5: Update version info
-            func.update_json("settings.json", new_data={"version": update.__version__})
-            func.logger.info("✓ Updated bot version in settings")
-        
-            return len(synced)
-
-        except Exception as e:
-            func.logger.error(f"Command sync failed: {e}", exc_info=True)
-            return 0
-
-    def log_missing_translations(self):
-        """Log any missing translations"""
-        for locale_key, values in func.MISSING_TRANSLATOR.items():
-            func.logger.warning(f'Missing translations for "{", ".join(values)}" in "{locale_key}"')
+        self.ipc_client: IPCClient
 
     async def on_message(self, message: discord.Message, /) -> None:
         # Ignore messages from bots or DMs
         if message.author.bot or not message.guild:
             return False
 
-        # Enhanced prefix handling
-        if self.user.id in message.raw_mentions and not message.mention_everyone:
+        # Check if the bot is directly mentioned
+        if message.content.strip() == self.user.mention and not message.mention_everyone:
             prefix = await self.command_prefix(self, message)
-            embed = discord.Embed(
-                title="Bot Information",
-                description=f"**Prefix:** `{prefix or 'No prefix set'}`\n"
-                           f"**Help Command:** `{prefix}help`\n"
-                           f"**Support:** {func.settings.invite_link}",
-                color=func.settings.embed_color
-            )
-            return await message.channel.send(embed=embed)
+            if not prefix:
+                return await message.channel.send("I don't have a bot prefix set.")
+            return await message.channel.send(f"My prefix is `{prefix}`")
 
-        # Handle music request channel
-        if await self.handle_music_request(message):
-            return
-
-        # Process regular commands
-        await self.process_commands(message)
-
-    async def handle_music_request(self, message: discord.Message) -> bool:
-        """Handle messages in music request channels"""
-        settings = await func.get_settings(message.guild.id)
+        # Fetch guild settings and check if the mesage is in the music request channel
+        settings = await MongoDBHandler.get_settings(message.guild.id)
         if settings and (request_channel := settings.get("music_request_channel")):
             if message.channel.id == request_channel.get("text_channel_id"):
-                ctx = await self.get_context(message)
+                ctx = await self.get_context(message)    
                 try:
-                    cmd = self.get_command("play")
-                    if message.content:
-                        await cmd(ctx, query=message.content)
-                    elif message.attachments:
-                        for attachment in message.attachments:
-                            await cmd(ctx, query=attachment.url)
+                    if not ctx.prefix:
+                        cmd = self.get_command("play")
+                        if message.content:
+                            await cmd(ctx, query=message.content)
+
+                        elif message.attachments:
+                            for attachment in message.attachments:
+                                await cmd(ctx, query=attachment.url)
+
                 except Exception as e:
-                    await func.send(ctx, str(e), ephemeral=True)
+                    await dispatch_message(ctx, str(e), ephemeral=True)
+
                 finally:
                     await message.delete()
-                return True
-        return False
 
-    async def connect_db(self) -> None:
-        if not ((db_name := func.settings.mongodb_name) and (db_url := func.settings.mongodb_url)):
-            raise Exception("MONGODB_NAME and MONGODB_URL can't not be empty in settings.json")
+        await self.process_commands(message)
 
-        try:
-            func.MONGO_DB = AsyncIOMotorClient(host=db_url)
-            await func.MONGO_DB.server_info()
-            func.logger.info(f"Successfully connected to [{db_name}] MongoDB!")
+    async def setup_hook(self) -> None:
+        # Connecting to MongoDB
+        await MongoDBHandler.init(bot_config.mongodb_url, bot_config.mongodb_name)
 
-        except Exception as e:
-            func.logger.error("Not able to connect MongoDB! Reason:", exc_info=e)
-            exit()
-        
-        func.SETTINGS_DB = func.MONGO_DB[db_name]["Settings"]
-        func.USERS_DB = func.MONGO_DB[db_name]["Users"]
+        # Set translator
+        await self.tree.set_translator(Translator())
+
+        # Loading all the module in `cogs` folder
+        for module in os.listdir(func.ROOT_DIR + '/cogs'):
+            if module.endswith('.py'):
+                try:
+                    await self.load_extension(f"cogs.{module[:-3]}")
+                    func.logger.info(f"Loaded {module[:-3]}")
+                except Exception as e:
+                    func.logger.error(f"Something went wrong while loading {module[:-3]} cog.", exc_info=e)
+
+        self.ipc_client: IPCClient = IPCClient(self, **bot_config.ipc_client)
+        if bot_config.ipc_client.get("enable", False):
+            try:
+                await self.ipc_client.connect()
+            except Exception as e:
+                func.logger.error(f"Cannot connected to dashboard! - Reason: {e}")
+
+        # Update version tracking
+        if not bot_config.version or bot_config.version != update.__version__:
+            await self.tree.sync()
+            func.update_json("settings.json", new_data={"version": update.__version__})
+            
+            for locale_key, values in self.tree.translator.MISSING_TRANSLATOR.items():
+                func.logger.warning(f'Missing translation for "{", ".join(values)}" in "{locale_key}"')
+            self.tree.translator.MISSING_TRANSLATOR.clear()
 
     async def on_ready(self):
         func.logger.info("------------------------")
         func.logger.info(f"Đăng nhập với tên người dùng {self.user}")
         func.logger.info(f"Bot ID: {self.user.id}")
         func.logger.info("------------------------")
+        func.logger.info(f"MiaSitas Version: {update.__version__}")
         func.logger.info(f"Discord Version: {discord.__version__}")
         func.logger.info(f"Python Version: {sys.version}")
-        func.logger.info("------------------------")
+        func.logger.info("------------------")
 
-        func.settings.client_id = self.user.id
-        func.LOCAL_LANGS.clear()
-        func.MISSING_TRANSLATOR.clear()
+        bot_config.client_id = self.user.id
+        LangHandler._local_langs.clear()
 
     async def on_command_error(self, ctx: commands.Context, exception, /) -> None:
         error = getattr(exception, 'original', exception)
         if ctx.interaction:
             error = getattr(error, 'original', error)
-            
+
         if isinstance(error, (commands.CommandNotFound, aiohttp.client_exceptions.ClientOSError, discord.errors.NotFound)):
             return
 
@@ -267,14 +169,14 @@ class Vocard(commands.Bot):
                 description += f"**Aliases:**\n`{', '.join([f'{ctx.prefix}{alias}' for alias in ctx.command.aliases])}`\n\n"
             description += f"**Description:**\n{ctx.command.help}\n\u200b"
 
-            embed = discord.Embed(description=description, color=func.settings.embed_color)
-            embed.set_footer(icon_url=ctx.me.display_avatar.url, text=f"More Help: {func.settings.invite_link}")
+            embed = discord.Embed(description=description, color=bot_config.embed_color)
+            embed.set_footer(icon_url=ctx.me.display_avatar.url, text=f"More Help: {bot_config.invite_link}")
             return await ctx.reply(embed=embed)
 
-        elif not issubclass(error.__class__, voicelink.VoicelinkException):
-            error = await func.get_lang(ctx.guild.id, "unknownException") + func.settings.invite_link
+        elif not issubclass(error.__class__, VoicelinkException):
+            error = await Lang_handler.get_lang(ctx.guild.id, "common.errors.unknown") + bot_config.invite_link
             func.logger.error(f"An unexpected error occurred in the {ctx.command.name} command on the {ctx.guild.name}({ctx.guild.id}).", exc_info=exception)
-            
+
         try:
             return await ctx.reply(error, ephemeral=True)
         except:
@@ -282,26 +184,28 @@ class Vocard(commands.Bot):
 
 class CommandCheck(discord.app_commands.CommandTree):
     async def interaction_check(self, interaction: discord.Interaction, /) -> bool:
-        if not interaction.guild:
-            await interaction.response.send_message("Lệnh này chỉ có thể sử dụng trong máy chủ Discord.")
-            return False
+        if interaction.type == discord.InteractionType.application_command:
+            if not interaction.guild:
+                await interaction.response.send_message("Lệnh này chỉ có thể sử dụng trong máy chủ Discord.")
+                return False
 
+            channel_perm = interaction.channel.permissions_for(interaction.guild.me)
+            if not channel_perm.read_messages or not channel_perm.send_messages:
+                await interaction.response.send_message("I don't have permission to read or send messages in this channel.")
+                return False
+            
         return True
 
 async def get_prefix(bot: commands.Bot, message: discord.Message) -> str:
-    settings = await func.get_settings(message.guild.id)
-    prefix = settings.get("prefix", func.settings.bot_prefix)
-
-    # Allow owner to use the bot without a prefix
-    if prefix and not message.content.startswith(prefix) and (await bot.is_owner(message.author) or message.author.id in func.settings.bot_access_user):
-        return ""
-
-    return prefix
+    settings = await MongoDBHandler.get_settings(message.guild.id)
+    prefix = settings.get("prefix", bot_config.bot_prefix)
+    return prefix if prefix is not None else ""
 
 # Loading settings and logger
-func.settings = Settings(func.open_json("settings.json"))
+bot_config = Config(func.open_json("settings.json"))
+Lang_handler = LangHandler.init()
 
-LOG_SETTINGS = func.settings.logging
+LOG_SETTINGS = bot_config.logging
 if (LOG_FILE := LOG_SETTINGS.get("file", {})).get("enable", True):
     log_path = os.path.abspath(LOG_FILE.get("path", "./logs"))
     if not os.path.exists(log_path):
@@ -315,12 +219,13 @@ if (LOG_FILE := LOG_SETTINGS.get("file", {})).get("enable", True):
 for log_name, log_level in LOG_SETTINGS.get("level", {}).items():
     _logger = logging.getLogger(log_name)
     _logger.setLevel(log_level)
-        
+
 # Setup the bot object
 intents = discord.Intents.default()
-intents.message_content = False if func.settings.bot_prefix is None else True
-intents.members = func.settings.ipc_client.get("enable", False)
+intents.message_content = False if bot_config.bot_prefix is None else True
+intents.members = bot_config.ipc_client.get("enable", False)
 intents.voice_states = True
+intents.presences = False
 
 bot = Vocard(
     command_prefix=get_prefix,
@@ -334,8 +239,4 @@ bot = Vocard(
 
 if __name__ == "__main__":
     update.check_version(with_msg=True)
-    bot.run(func.settings.token, root_logger=True)
-    
-    # Verify commands after bot is ready
-    if not asyncio.run(bot.verify_commands()):
-        func.logger.warning("No commands verified! Bot may not work as expected.")
+    bot.run(bot_config.token, root_logger=True)

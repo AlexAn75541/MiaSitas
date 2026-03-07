@@ -51,6 +51,7 @@ from .objects import Playlist, Track
 from .utils import ExponentialBackoff, NodeStats, NodeInfo, Ping
 from .enums import RequestMethod
 from .ratelimit import YTRatelimit, YTToken, STRATEGY
+from .config import Config
 
 if TYPE_CHECKING:
     from .player import Player
@@ -91,6 +92,7 @@ class Node:
         self._heartbeat: int = heartbeat
         self._secure: bool = secure
         self._logger: Optional[logging.Logger] = logger
+        self._stats: Optional[NodeStats] = None
 
         self._websocket_uri: str = f"{'wss' if self._secure else 'ws'}://{self._host}:{self._port}/" + NODE_VERSION + "/websocket"
         self._rest_uri: str = f"{'https' if self._secure else 'http'}://{self._host}:{self._port}"
@@ -113,7 +115,7 @@ class Node:
         self._players: Dict[int, Player] = {}
         self._info: Optional[NodeInfo] = None
         
-        self.yt_ratelimit: Optional[YTRatelimit] = STRATEGY.get(yt_ratelimit.get("strategy"))(self, yt_ratelimit) if yt_ratelimit else None
+        self.yt_ratelimit: Optional[YTRatelimit] = STRATEGY.get(yt_ratelimit.get("strategy"))(self, yt_ratelimit) if yt_ratelimit and yt_ratelimit.get("tokens") else None
 
         self._bot.add_listener(self._update_handler, "on_socket_response")
 
@@ -353,7 +355,7 @@ class Node:
         query: str,
         *,
         requester: Member,
-        search_type: SearchType = SearchType.YOUTUBE
+        search_type: SearchType = None
     ) -> Union[List[Track], Playlist]:
         """
         Fetches tracks from the node's REST api to parse into Lavalink.
@@ -361,7 +363,9 @@ class Node:
         You can also pass in a discord.py Context object to get a
         Context object on any track you search.
         """
-
+        if not search_type:
+            search_type = Config().search_platform
+            
         if not URL_REGEX.match(query) and ':' not in query:
             query = f"{search_type}:{query}"
 
@@ -386,27 +390,6 @@ class Node:
 
         elif load_type == "track":
             return [Track(track_id=data["encoded"], info=data["info"], requester=requester)]
-
-    async def get_recommendations(self, track: Track, limit: int = 20) -> List[Optional[Track]]:
-        query = ""
-        if track.source == "youtube":
-            query = f"https://www.youtube.com/watch?v={track.identifier}&list=RD{track.identifier}"
-
-        elif track.source == "spotify":
-            query = f"sprec:seed_tracks={track.identifier}"
-
-        if not query:
-            return []
-        
-        tracks = await self.get_tracks(query=query, requester=self.bot.user)
-        
-        if not track:
-            return []
-        
-        if isinstance(tracks, Playlist):
-            tracks = tracks.tracks
-
-        return tracks[:limit] if limit else tracks
     
     async def update_refresh_yt_access_token(self, token: YTToken) -> dict:
         if not self._available:
@@ -510,7 +493,7 @@ class NodePool:
             raise NodeCreationError(f"A node with identifier '{identifier}' already exists.")
         
         if not logger:
-            logger = logging.getLogger("voicelink")
+            logger = logging.getLogger("vocard")
             
         node = Node(
             pool=cls, bot=bot, host=host, port=port, password=password,
