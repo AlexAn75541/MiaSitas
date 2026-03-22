@@ -313,7 +313,7 @@ class Settings(commands.Cog, name="settings"):
         await send_localized_message(ctx, "songRequest.channelCreated", channel.mention)
 
     @settings.command(name="reset", aliases=get_aliases("reset"))
-    @app_commands.describe(setting="Which setting to restore to defaults (removes this guild override)")
+    @app_commands.describe(setting="Which setting to restore to defaults.")
     @app_commands.choices(setting=[
         app_commands.Choice(name=label.capitalize(), value=label)
         for label in _RESET_LABELS.keys()
