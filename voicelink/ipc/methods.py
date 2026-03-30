@@ -508,7 +508,6 @@ async def updatePlaylist(bot: commands.Bot, data: Dict) -> Dict:
         if playlist['type'] in ['share', 'link']:
             return error_msg("Bạn không thể thêm bài hát vào playlist liên kết qua MiaSitas.", user_id=user_id, level='error')
         
-        max_p, max_t, _ = Config().get_playlist_config()
         if len(playlist['tracks']) >= max_t:
             return error_msg(f"Bạn đã đạt giới hạn! Bạn chỉ có thể thêm {max_t} bài hát vào playlist.", user_id=user_id)
 

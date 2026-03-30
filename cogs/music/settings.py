@@ -298,7 +298,7 @@ class Settings(commands.Cog, name="settings"):
     @app_commands.command(name="debug")
     async def debug(self, interaction: discord.Interaction):
         if interaction.user.id not in voicelink.Config().bot_access_user:
-            return await interaction.response.send_message("Bạn không được phép sử dụng lệnh này!")
+            return await interaction.response.send_message("Bạn không được phép sử dụng lệnh này!", ephemeral=True)
 
         memory = psutil.virtual_memory()
         disk = psutil.disk_usage(func.ROOT_DIR)

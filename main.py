@@ -237,7 +237,7 @@ class CommandCheck(discord.app_commands.CommandTree):
 
             channel_perm = interaction.channel.permissions_for(interaction.guild.me)
             if not channel_perm.read_messages or not channel_perm.send_messages:
-                await interaction.response.send_message("Tôi không có quyền đọc hoặc gửi tin nhắn trong kênh này.")
+                await interaction.response.send_message("Tôi không có quyền đọc hoặc gửi tin nhắn trong kênh này.", ephemeral=True)
                 return False
             
         return True
