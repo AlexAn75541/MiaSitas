@@ -122,6 +122,8 @@ class Basic(commands.Cog):
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def play(self, ctx: commands.Context, *, query: str, start: str = "0", end: str = "0") -> None:
         "Tải bài hát vào hàng chờ."
+        if isinstance(ctx, discord.Interaction) and not ctx.interaction.response.is_done():
+            await ctx.defer()
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             player = await voicelink.connect_channel(ctx)
@@ -216,6 +218,8 @@ class Basic(commands.Cog):
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def search(self, ctx: commands.Context, *, query: str, platform: str = Config().search_platform.name):
         "Tìm kiếm truy vấn của bạn và hiển thị kết quả."
+        if isinstance(ctx, discord.Interaction) and not ctx.interaction.response.is_done():
+            await ctx.defer()
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             player = await voicelink.connect_channel(ctx)
@@ -259,6 +263,8 @@ class Basic(commands.Cog):
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
     async def playtop(self, ctx: commands.Context, *, query: str, start: str = "0", end: str = "0"):
         "Thêm bài hát lên đầu hàng chờ."
+        if isinstance(ctx, discord.Interaction) and not ctx.interaction.response.is_done():
+            await ctx.defer()
         player: voicelink.Player = ctx.guild.voice_client
         if not player:
             player = await voicelink.connect_channel(ctx)
