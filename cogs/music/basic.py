@@ -787,7 +787,7 @@ class Basic(commands.Cog):
     @commands.hybrid_command(name="lyrics", aliases=get_aliases("lyrics"))
     @app_commands.describe(title="Tìm kiếm truy vấn và hiển thị lời bài hát.")
     @commands.dynamic_cooldown(cooldown_check, commands.BucketType.guild)
-    async def lyrics(self, ctx: commands.Context, title: str = "", artist: str = ""):
+    async def lyrics(self, ctx: commands.Context, *, title: str = "", artist: str = ""):
         "Hiển thị lời bài hát đang phát."
         if not title:
             player: voicelink.Player = ctx.guild.voice_client
