@@ -25,13 +25,15 @@ import voicelink
 import discord
 import function as func
 
+
+from voicelink.config import Config
 from discord.ext import commands, tasks
 
 class Task(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.activity_update.start()
-        self.player_check.start()
+        # self.player_check.start()
         self.cache_cleaner.start()
 
         self.current_act = 0
@@ -39,15 +41,15 @@ class Task(commands.Cog):
 
     def cog_unload(self):
         self.activity_update.cancel()
-        self.player_check.cancel()
+        # self.player_check.cancel()
         self.cache_cleaner.cancel()
     
-    @tasks.loop(minutes=10.0)
+    @tasks.loop(seconds=Config().timer_settings.get("bot_activity_update", 600))
     async def activity_update(self):
         await self.bot.wait_until_ready()
 
         try:
-            act_data = voicelink.Config().activity[(self.current_act + 1) % len(voicelink.Config().activity) - 1]
+            act_data = Config().activity[(self.current_act + 1) % len(Config().activity) - 1]
             act_original = self.bot.activity
             act_type = getattr(discord.ActivityType, act_data.get("type", "").lower(), discord.ActivityType.playing)
             act_name = self.placeholder.replace(act_data.get("name", ""))
@@ -57,13 +59,13 @@ class Task(commands.Cog):
             if act_original.type != act_type or act_original.name != act_name:
                 self.bot.activity = discord.Activity(type=act_type, name=act_name)
                 await self.bot.change_presence(activity=self.bot.activity, status=status_type)
-                self.current_act = (self.current_act + 1) % len(voicelink.Config().activity)
+                self.current_act = (self.current_act + 1) % len(Config().activity)
 
                 func.logger.info(f"Chỉnh bot sang hoạt động {act_name}")
 
         except Exception as e:
             func.logger.error("Đã có lỗi trong quá trình chuyển hoạt động", exc_info=e)
-
+"""
     @tasks.loop(minutes=5.0)
     async def player_check(self):
         for identifier, node in voicelink.NodePool._nodes.items():
@@ -104,6 +106,8 @@ class Task(commands.Cog):
     @tasks.loop(hours=12.0)
     async def cache_cleaner(self):
         await voicelink.MongoDBHandler.cleanup_cache()
+"""
+    @tasks.loop(seconds=Config().timer_settings.get("cache_cleanup", 43200))
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Task(bot))
