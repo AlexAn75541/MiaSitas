@@ -1,0 +1,275 @@
+{
+    "common": {
+        "errors": {
+            "unknown": "⚠️ Qualcosa è andato storto durante l'esecuzione del comando! Riprova più tardi o entra nel nostro server Discord per ulteriore supporto.",
+            "missingIntents": "Spiacenti, questo comando non può essere eseguito perché al bot manca l'intent richiesto: `({0})`."
+        },
+        "status": {
+            "enabled": "abilitato",
+            "disabled": "disabilitato",
+            "live": "IN DIRETTA"
+        }
+    },
+    "player": {
+        "errors": {
+            "nodeReconnect": "Riprova dopo la riconnessione del nodo!",
+            "noPlaySource": "Impossibile trovare sorgenti riproducibili!",
+            "noPlayer": "Nessun riproduttore trovato su questo server.",
+            "noTrackPlaying": "Al momento non c'è nessuna canzone in riproduzione.",
+            "noTrackFound": "Nessuna canzone trovata con questa ricerca! Fornisci un URL valido."
+        },
+        "dropdown": {
+            "trackSelect": "Seleziona una canzone da riprodurre...",
+            "filterSelect": "Seleziona un filtro da applicare..."
+        },
+        "buttons": {
+            "back": "Indietro",
+            "pause": "Pausa",
+            "resume": "Riprendi",
+            "skip": "Salta",
+            "leave": "Abbandona",
+            "loopOff": "Disattivato",
+            "loopTrack": "Brano",
+            "loopQueue": "Coda",
+            "volumeUp": "Alzate volume",
+            "volumeDown": "Abbassa volume",
+            "volumeMute": "Muto",
+            "volumeUnmute": "Riapri audio",
+            "autoPlay": "Riproduzione automatica",
+            "shuffle": "Riproduzione casuale",
+            "forward": "Avanti",
+            "rewind": "Indietro",
+            "lyrics": "Testo"
+        },
+        "playback": {
+            "nowplayingDesc": "**In riproduzione:**\n```{0}```",
+            "nowplayingField": "Prossimo brano:",
+            "nowplayingLink": "Ascolta su {0}",
+            "playlistLoad": " 🎶 Aggiunta la playlist **{0}** con `{1}` canzoni alla coda.",
+            "trackLoad": "Aggiunto **[{0}](<{1}>)** di **{2}** (`{3}`) per iniziare la riproduzione.\n",
+            "trackLoadPos": "Aggiunto **[{0}](<{1}>)** di **{2}** (`{3}`) alla coda in posizione **{4}**\n"
+        },
+        "controls": {
+            "pause": {
+                "error": "Il riproduttore è già in pausa.",
+                "vote": "{0} ha votato per mettere in pausa la canzone. [{1}/{2}]",
+                "success": "`{0}` ha messo in pausa il riproduttore."
+            },
+            "resume": {
+                "error": "Il riproduttore non è in pausa.",
+                "vote": "{0} ha votato per riprendere la canzone. [{1}/{2}]",
+                "success": "`{0}` ha ripreso la riproduzione."
+            },
+            "shuffle": {
+                "error": "Aggiungi altre canzoni alla coda prima di attivare la riproduzione casuale.",
+                "vote": "{0} ha votato per mescolare la coda. [{1}/{2}]",
+                "success": "La coda è stata mescolata."
+            },
+            "skip": {
+                "error": "Non ci sono canzoni da saltare.",
+                "vote": "{0} ha votato per saltare la canzone. [{1}/{2}]",
+                "success": "`{0}` ha saltato la canzone."
+            },
+            "back": {
+                "vote": "{0} ha votato per tornare alla canzone precedente. [{1}/{2}]",
+                "success": "`{0}` sta tornando alla canzone precedente."
+            },
+            "leave": {
+                "vote": "{0} ha votato per fermare il riproduttore. [{1}/{2}]",
+                "success": "`{0}` ha fermato il riproduttore."
+            },
+            "seek": "Impostato il riproduttore a **{0}**",
+            "repeat": "La modalità di ripetizione è stata impostata su `{0}`",
+            "forward": "Mandato avanti il riproduttore a **{0}**",
+            "rewind": "Riavvolto il riproduttore a **{0}**",
+            "replay": "Riproduzione dall'inizio della canzone attuale.",
+            "autoplay": "La modalità di riproduzione automatica è ora **{0}**"
+        }
+    },
+    "voice": {
+        "connection": {
+            "noChannel": "Nessun canale vocale a cui connettersi. Specificane uno o entra in un canale.",
+            "alreadyConnected": "Già connesso a un canale vocale.",
+            "noPermission": "Spiacenti! Non ho i permessi per entrare o parlare nel tuo canale vocale.",
+            "notInChannel": "{0}, devi essere in {1} per usare i comandi vocali. Rientra nel canale vocale!",
+            "connect": "Connesso a {0}"
+        },
+        "stageChannel": {
+            "setAnnounceTemplate": "Fatto! Da ora in poi, gli stati vocali come quello attuale verranno nominati in base al tuo modello. Dovresti vederlo aggiornato tra pochi secondi."
+        }
+    },
+    "permissions": {
+        "noCreatePermission": "Spiacenti! Non ho i permessi per creare un canale per le richieste di canzoni.",
+        "missingPosition": "Solo il DJ o gli amministratori possono modificare la posizione.",
+        "missingMode": "Solo il DJ o gli amministratori possono cambiare la modalità di loop.",
+        "missingQueue": "Solo il DJ o gli amministratori possono rimuovere brani dalla coda.",
+        "missingAutoPlay": "Solo il DJ o gli amministratori possono abilitare o disabilitare la riproduzione automatica!",
+        "missingFunction": "Solo il DJ o gli amministratori possono usare questa funzione.",
+        "notDj": "Non sei il DJ. Il DJ attuale è {0}.",
+        "djToSelf": "Non puoi trasferire il ruolo di DJ a te stesso o a un bot.",
+        "djNotInChannel": "`{0}` non è nel canale vocale.",
+        "djSwapped": "Hai trasferito il ruolo di DJ a `{0}`."
+    },
+    "settings": {
+        "actions": {
+            "languageNotFound": "Nessun pacchetto lingua trovato! Seleziona un pacchetto lingua esistente.",
+            "languageChanged": "Pacchetto lingua cambiato con successo in `{0}`.",
+            "prefixSet": "Fatto! Il mio prefisso nel tuo server è ora `{0}`. Prova a digitare `{1}ping` per testarlo.",
+            "djSet": "Impostato il DJ su {0}.",
+            "queueModeSet": "Modalità coda impostata su `{0}`.",
+            "mode247": "La modalità 24/7 è ora `{0}`.",
+            "bypassVote": "Hai `{0}` il sistema di votazione.",
+            "volumeSet": "Volume impostato al `{0}`%",
+            "controllerToggled": "Hai `{0}` il controller musicale.",
+            "duplicateTrackToggled": "Hai `{0}` la prevenzione dei brani duplicati.",
+            "controllerMsgToggled": "Hai `{0}` i messaggi dal controller musicale.",
+            "silentMsgToggled": "Hai `{0}` i messaggi silenziosi.",
+            "resetDone": "Ripristinato `{0}` ai valori predefiniti del server.",
+            "resetNotFound": "Nome impostazione non valido. Usa uno dei seguenti: {0}"
+        },
+        "menu": "Impostazioni Server | {0}",
+        "basic": {
+            "title": "❤️ Informazioni di base:",
+            "value": "```Prefisso: {0}\nLingua: {1}\nController musicale: {2}\nRuolo DJ: @{3}\nBypass voto: {4}\n24/7: {5}\nVolume predefinito: {6}%\nTempo di riproduzione: {7}```"
+        },
+        "queue": {
+            "title": "🔗 Informazioni coda:",
+            "value": "```Modalità coda: {0}\nCanzoni max: {1}\nBrani duplicati: {2}```"
+        },
+        "voice": {
+            "title": "🎤 Informazioni stato vocale:"
+        },
+        "permissions": {
+            "title": "✨ Permessi:",
+            "value": "```{0} Amministratore\n{1} Gestisci_Server\n{2} Gestisci_Canale\n{3} Gestisci_Messaggi```"
+        }
+    },
+    "ping": {
+        "title1": "Info Bot:",
+        "title2": "Info Riproduttore:",
+        "field1": "```ID Shard: {0}/{1}\nLatenza Shard: {2:.3f}s {3}\nRegione: {4}```",
+        "field2": "```Nodo: {0} - {1:.3f}s\nRiproduttori: {2}\nRegione Vocale: {3}```"
+    },
+    "effects": {
+        "added": "Applicato l'effetto `{0}`.",
+        "cleared": "Gli effetti sonori sono stati rimossi!",
+        "tagInUse": "Questo effetto sonoro è già in uso! Usa /cleareffect <Tag> per rimuoverlo."
+    },
+    "playlist": {
+        "view": {
+            "title": "Tutte le playlist di {0}",
+            "headers": "ID:,Ora:,Nome:,Brani:",
+            "footer": "Digita /playlist play [playlist] per aggiungere una playlist alla coda.",
+            "detailTitle": "Visualizzatore Playlist",
+            "detailDesc": "```Nome: {0} [{1}]\nBrani totali: {2}\nProprietario: {3}\nTipo: {4}\n```",
+            "permsValue": "📖 Lettura: ✓    ✍🏽 Scrittura: {0}    🗑️️ Rimozione: {1}",
+            "permsValue2": "📖 Lettura: {0}",
+            "trackList": "Brani",
+            "footer2": "Durata totale: {0}",
+            "playlistSelect": "Seleziona una playlist da visualizzare..."
+        },
+        "errors": {
+            "notFound": "Playlist [`{0}`] non trovata. Digita /playlist view per vedere tutte le tue playlist.",
+            "noAccess": "Spiacenti! Non disponi dell'accesso a questa playlist!",
+            "noTrack": "Spiacenti! Non ci sono brani nella playlist [`{0}`].",
+            "notAllowed": "Questo comando non è consentito sulle playlist collegate e condivise.",
+            "nameOverLimit": "Spiacenti! Il nome della playlist non può superare i 10 caratteri.",
+            "sameName": "Spiacenti! Seleziona un nuovo nome per la playlist.",
+            "deleteDefault": "Non ti è consentito eliminare la playlist predefinita.",
+            "limitReached": "Non puoi creare più di `{0}` playlist!",
+            "exists": "La playlist [`{0}`] esiste già.",
+            "invalidUrl": "Inserisci un link valido a una playlist pubblica.",
+            "trackLimitReached": "Hai raggiunto il limite! Puoi aggiungere solo `{0}` canzoni alla tua playlist.",
+            "playlistLinkNotAllowed": "Non ti è consentito usare i link delle playlist.",
+            "streamNotAllowed": "Non ti è consentito aggiungere video in streaming alla tua playlist.",
+            "positionNotFound": "Impossibile trovare la posizione `{0}` nella tua playlist [`{1}`]!",
+            "streaming": "Non ti è consentito aggiungere video in streaming alla tua playlist!",
+            "track": "Si è verificato un problema durante l'aggiunta dei brani alla playlist!",
+            "trackLimited": "Hai raggiunto il limite! Puoi aggiungere solo {0} canzoni alla tua playlist.",
+            "trackRepeated": "Questo brano è già presente nella tua playlist!"
+        },
+        "actions": {
+            "play": "Aggiunta la playlist [`{0}`] con `{1}` canzoni alla coda.",
+            "removed": "Hai rimosso la playlist [`{0}`].",
+            "created": "Hai creato la playlist `{0}`. Digita /playlist view per maggiori informazioni.",
+            "renamed": "Hai rinominato `{0}` in `{1}`.",
+            "trackRemoved": "👋 Rimosso **{0}** dalla playlist [`{2}`] di {1}.",
+            "cleared": "Hai svuotato con successo la tua playlist [`{0}`].",
+            "trackAdded": "❤️ Aggiunto **{0}** alla playlist [`{2}`] di {1}!"
+        },
+        "sharing": {
+            "sendErrorPlayer": "Spiacenti! Non puoi inviare un invito a te stesso.",
+            "sendErrorBot": "Spiacenti! Non puoi inviare un invito a un bot.",
+            "belongs": "Spiacenti! Questa playlist appartiene a <@{0}>.",
+            "alreadyShared": "Spiacenti! Questa playlist è già stata condivisa con {0}.",
+            "alreadySent": "Spiacenti! Hai già inviato un invito a quell'utente in precedenza.",
+            "noAccount": "{0} non ha creato un account playlist.",
+            "invitationSent": "Invito inviato a {0}."
+        },
+        "inbox": {
+            "full": "Spiacenti! La posta in arrivo di {0} è piena.",
+            "noMessages": "Non ci sono messaggi nella tua posta in arrivo."
+        },
+        "permissions": {
+            "granted": "Concesso il permesso **{1}** a {0} per la playlist [`{2}`].",
+            "revoked": "Revocato il permesso **{1}** a {0} per la playlist [`{2}`].",
+            "alreadyGranted": "{0} ha già il permesso **{1}** per questa playlist.",
+            "notGranted": "{0} non ha il permesso **{1}** per questa playlist.",
+            "cannotModifySelf": "Non puoi modificare i tuoi stessi permessi.",
+            "invalidPermission": "Tipo di permesso non valido. Deve essere: read, write o remove.",
+            "invalidAction": "Azione non valida. Deve essere: grant o revoke."
+        }
+    },
+    "search": {
+        "noLinkSupport": "Il comando di ricerca non supporta i link!",
+        "title": "Ricerca: {0}",
+        "desc": "➥ Piattaforma: {0} **{1}**\n➥ Risultati: **{2}**\n\n{3}",
+        "wait": "Seleziona la canzone che desideri aggiungere alla coda.",
+        "success": "Canzone aggiunta alla coda."
+    },
+    "voting": {
+        "voted": "Hai votato!"
+    },
+    "time": {
+        "formatError": "Formato ora non corretto. Esempio: 2:42 o 12:39:31",
+        "invalidStartTime": "Ora di inizio non valida, deve essere compresa tra `00:00` e `{0}`",
+        "invalidEndTime": "Ora di fine non valida, deve essere compresa tra `00:00` e `{0}`"
+    },
+    "lyrics": {
+        "notFound": "Testo non trovato. Digita /lyrics <Nome Canzone> <Autore> per cercare il testo."
+    },
+    "queue": {
+        "management": {
+            "title": "Prossimi brani in coda:",
+            "cleared": "Rimosso tutti i brani in `{0}`",
+            "removed": "Sono stati rimossi `{0}` brani dalla coda.",
+            "swapped": "`{0}` e `{1}` sono stati scambiati",
+            "moved": "Spostato `{0}` in `{1}`"
+        },
+        "view": {
+            "historyTitle": "Cronologia coda:",
+            "title": "Coda Musicale",
+            "desc": "**In riproduzione: [Clicca Qui]({0}) ⮯**\n{1}"
+        },
+        "errors": {
+            "queueFull": "Spiacenti, hai raggiunto il limite massimo di `{0}` brani nella coda!",
+            "outOfList": "Fornisci un indice del brano valido!",
+            "duplicateTrack": "Spiacenti, questo brano è già presente nella coda."
+        }
+    },
+    "songRequest": {
+        "channelCreated": "È stato creato un canale per le richieste musicali ({0})! Puoi iniziare a richiedere qualsiasi canzone indicandone il nome o l'URL in quel canale, senza dover usare il prefisso del bot."
+    },
+    "pagination": {
+        "prev": "Prec",
+        "next": "Succ",
+        "play": "Riproduci",
+        "share": "Condividi",
+        "export": "Esporta",
+        "delete": "Elimina",
+        "page": {
+            "title": "Inserisci numero di pagina",
+            "field": "Numero di pagina"
+        }
+    }
+}
