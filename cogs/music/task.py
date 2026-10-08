@@ -17,11 +17,15 @@ class Task(commands.Cog):
     def cog_unload(self):
         self.activity_update.cancel()
         self.cache_cleaner.cancel()
+
+    @activity_update.before_loop
+    async def before_activity_update(self):
+        await self.bot.wait_until_ready()
     
     @tasks.loop(seconds=Config().timer_settings.get("bot_activity_update", 600))
     async def activity_update(self):
         act = Config().activity
-        if not act:
+        if not act or not self.bot.is_ready():
             return
 
         if self.current_act >= len(act):
