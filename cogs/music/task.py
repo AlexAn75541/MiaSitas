@@ -1,5 +1,5 @@
 import discord
-import func
+import function as func
 import voicelink
 
 from voicelink.config import Config
