@@ -1,21 +1,36 @@
 #!/bin/sh
 set -e
 
-# Base configuration template priority: /data/settings.json -> /app/settings.json -> /app/settings Example.json
-if [ -f /data/settings.json ]; then
-    echo "[Entrypoint] Using settings.json from /data"
-    cp /data/settings.json /app/settings.json
-elif [ ! -f /app/settings.json ] && [ -f "/app/settings Example.json" ]; then
-    echo "[Entrypoint] Initializing settings.json from template"
-    cp "/app/settings Example.json" /app/settings.json
+# Detect mount directory used by MCSManager (/app or /data)
+CONFIG_DIR="/data"
+if [ -f "/app/settings.json" ] || [ -d "/app" -a ! -d "/data" ]; then
+    CONFIG_DIR="/app"
 fi
 
-# Hydrate environment variables into /app/settings.json
-if [ -f /app/settings.json ]; then
+echo "[Entrypoint] Code root: /src, Mount target: ${CONFIG_DIR}"
+
+# 1. Config file resolution
+if [ -f "${CONFIG_DIR}/settings.json" ]; then
+    echo "[Entrypoint] Found ${CONFIG_DIR}/settings.json. Copying to /src..."
+    cp "${CONFIG_DIR}/settings.json" /src/settings.json
+elif [ -f "/data/settings.json" ]; then
+    echo "[Entrypoint] Found /data/settings.json. Copying to /src..."
+    cp "/data/settings.json" /src/settings.json
+else
+    if [ ! -f "/src/settings.json" ] && [ -f "/src/settings Example.json" ]; then
+        echo "[Entrypoint] Initializing settings.json from template..."
+        cp "/src/settings Example.json" /src/settings.json
+        if [ -d "${CONFIG_DIR}" ]; then
+            cp "/src/settings Example.json" "${CONFIG_DIR}/settings.json"
+        fi
+    fi
+
+    # Hydrate environment variables if no pre-existing settings file
+    echo "[Entrypoint] Hydrating settings.json from environment variables..."
     python3 -c "
 import os, json
 
-path = '/app/settings.json'
+path = '/src/settings.json'
 try:
     with open(path, 'r', encoding='utf-8') as f:
         cfg = json.load(f)
@@ -23,9 +38,9 @@ except Exception:
     cfg = {}
 
 env_map = {
-    'TOKEN': ('TOKEN', str),
-    'CLIENT_ID': ('CLIENT_ID', int),
-    'DEFAULT_PREFIX': ('default_prefix', str),
+    'TOKEN': ('token', str),
+    'CLIENT_ID': ('client_id', int),
+    'DEFAULT_PREFIX': ('prefix', str),
     'EMBED_COLOR': ('embed_color', str),
     'OWNER_IDS': ('owner_ids', lambda v: [int(x.strip()) for x in v.split(',') if x.strip()]),
     'BOT_ACCESS_USER': ('bot_access_user', lambda v: [int(x.strip()) for x in v.split(',') if x.strip()]),
@@ -35,7 +50,7 @@ env_map = {
     'SPOTIFY_CLIENT_SECRET': ('spotify_client_secret', str),
     'GENIUS_TOKEN': ('genius_token', str),
     'MUSIXMATCH_TOKEN': ('musixmatch_token', str),
-    'SEARCH_PLATFORM': ('search_platform', str),
+    'SEARCH_PLATFORM': ('default_search_platform', str),
     'LYRICS_PLATFORM': ('lyrics_platform', str),
     'IPC_ROUTES': ('ipc_routes', str),
     'VERSION': ('version', str),
@@ -67,11 +82,17 @@ if updated:
 "
 fi
 
-# Mount logs in /data/logs if /data is present
-if [ -d /data ]; then
+# 2. Redirect logs to host mount directory
+if [ -d "${CONFIG_DIR}" ]; then
+    mkdir -p "${CONFIG_DIR}/logs"
+    rm -rf /src/logs
+    ln -sf "${CONFIG_DIR}/logs" /src/logs
+elif [ -d "/data" ]; then
     mkdir -p /data/logs
-    rm -rf /app/logs
-    ln -sf /data/logs /app/logs
+    rm -rf /src/logs
+    ln -sf /data/logs /src/logs
 fi
 
-exec python -u main.py
+# 3. Always execute from /src
+cd /src
+exec python -u /src/main.py
