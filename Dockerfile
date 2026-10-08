@@ -1,5 +1,5 @@
 # Stage 1: Build
-FROM python:3.15.0a6-slim-trixie as builder
+FROM python:3.11-slim-bookworm as builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
@@ -12,9 +12,9 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Stage 2: Runtime
-FROM python:3.15.0a6-slim-trixie
+FROM python:3.11-slim-bookworm
 
-COPY --from=builder /usr/local/lib/python3.15/site-packages /usr/local/lib/python3.15/site-packages
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 
 # Bundle immutable app code into /src (immune to /app or /data host mounts)
 WORKDIR /src
