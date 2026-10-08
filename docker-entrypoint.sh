@@ -16,6 +16,9 @@ if [ -f "${CONFIG_DIR}/settings.json" ]; then
 elif [ -f "/data/settings.json" ]; then
     echo "[Entrypoint] Found /data/settings.json. Copying to /src..."
     cp "/data/settings.json" /src/settings.json
+elif [ -f "/app/settings.json" ]; then
+    echo "[Entrypoint] Found /app/settings.json. Copying to /src..."
+    cp "/app/settings.json" /src/settings.json
 else
     if [ ! -f "/src/settings.json" ] && [ -f "/src/settings Example.json" ]; then
         echo "[Entrypoint] Initializing settings.json from template..."
@@ -91,6 +94,10 @@ elif [ -d "/data" ]; then
     mkdir -p /data/logs
     rm -rf /src/logs
     ln -sf /data/logs /src/logs
+elif [ -d "/app" ]; then
+    mkdir -p /app/logs
+    rm -rf /src/logs
+    ln -sf /app/logs /src/logs
 fi
 
 # 3. Always execute from /src
