@@ -18,10 +18,6 @@ class Task(commands.Cog):
         self.activity_update.cancel()
         self.cache_cleaner.cancel()
 
-    @activity_update.before_loop
-    async def before_activity_update(self):
-        await self.bot.wait_until_ready()
-    
     @tasks.loop(seconds=Config().timer_settings.get("bot_activity_update", 600))
     async def activity_update(self):
         act = Config().activity
@@ -66,6 +62,10 @@ class Task(commands.Cog):
 
         except Exception as e:
             func.logger.error("Đã có lỗi trong quá trình chuyển hoạt động", exc_info=e)
+
+    @activity_update.before_loop
+    async def before_activity_update(self):
+        await self.bot.wait_until_ready()
 
     @tasks.loop(seconds=Config().timer_settings.get("cache_cleanup", 43200))
     async def cache_cleaner(self):
