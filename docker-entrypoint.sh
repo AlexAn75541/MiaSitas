@@ -90,20 +90,19 @@ if updated:
 "
 fi
 
-# 2. Redirect logs to host mount directory
-if [ -d "${CONFIG_DIR}" ]; then
-    mkdir -p "${CONFIG_DIR}/logs"
-    rm -rf /src/logs
-    ln -sf "${CONFIG_DIR}/logs" /src/logs
-elif [ -d "/data" ]; then
-    mkdir -p /data/logs
-    rm -rf /src/logs
-    ln -sf /data/logs /src/logs
-elif [ -d "/app" ]; then
-    mkdir -p /app/logs
-    rm -rf /src/logs
-    ln -sf /app/logs /src/logs
+# 2. Setup logs directly as a real directory, with world-writable permissions
+# Remove broken symlinks in the mounted directory if present
+if [ -L "${CONFIG_DIR}/logs" ]; then
+    rm -f "${CONFIG_DIR}/logs"
 fi
+
+# Create real directory and grant permissions
+mkdir -p "${CONFIG_DIR}/logs"
+chmod -R 777 "${CONFIG_DIR}/logs" 2>/dev/null || true
+
+# Point internal /src/logs to external mounted logs
+rm -rf /src/logs
+ln -sf "${CONFIG_DIR}/logs" /src/logs
 
 # 3. Always execute from /src with PYTHONPATH set
 export PYTHONPATH="/src:/app:/data:$PYTHONPATH"
