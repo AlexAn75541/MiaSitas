@@ -16,17 +16,22 @@ FROM python:3.11-slim-bookworm
 
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 
-# Bundle immutable app code into /src (immune to /app or /data host mounts)
+# Bundle immutable application code into /src
 WORKDIR /src
 COPY . .
 
-# Create fallback mount targets for MCSManager
-RUN mkdir -p /data /app
+# Ensure update.py is always present
+RUN if [ ! -f /src/update.py ] && [ -f /src/update.py.ogonly ]; then cp /src/update.py.ogonly /src/update.py; fi
+
+# Create fallback mount directories
+RUN mkdir -p /data /app /src/logs
+
+# Set Python search path so local modules like update, function, voicelink are always discoverable
+ENV PYTHONPATH="/src:/app:/data"
+ENV PYTHONUNBUFFERED=1
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
-
-ENV PYTHONUNBUFFERED=1
 
 WORKDIR /src
 

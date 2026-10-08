@@ -9,6 +9,11 @@ fi
 
 echo "[Entrypoint] Code root: /src, Mount target: ${CONFIG_DIR}"
 
+# Guarantee update.py exists
+if [ ! -f /src/update.py ] && [ -f /src/update.py.ogonly ]; then
+    cp /src/update.py.ogonly /src/update.py
+fi
+
 # 1. Config file resolution
 if [ -f "${CONFIG_DIR}/settings.json" ]; then
     echo "[Entrypoint] Found ${CONFIG_DIR}/settings.json. Copying to /src..."
@@ -100,6 +105,7 @@ elif [ -d "/app" ]; then
     ln -sf /app/logs /src/logs
 fi
 
-# 3. Always execute from /src
+# 3. Always execute from /src with PYTHONPATH set
+export PYTHONPATH="/src:/app:/data:$PYTHONPATH"
 cd /src
 exec python -u /src/main.py
