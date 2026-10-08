@@ -30,6 +30,8 @@ from typing import Any, Dict, Optional, Literal, TypedDict, List
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
 from .config import Config
 
+from .config import Config
+
 logger: logging.Logger = logging.getLogger("vocard.db")
 
 # Type definitions for better code clarity

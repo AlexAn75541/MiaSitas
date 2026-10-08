@@ -27,9 +27,28 @@ import socket
 import discord
 
 from itertools import zip_longest
+from dataclasses import dataclass
 from typing import Dict, Optional, Union
 from timeit import default_timer as timer
 from discord.ext import commands
+
+@dataclass
+class NodeTimeouts:
+    """Per-node reattach delays and HTTP/WebSocket timeouts (seconds)."""
+    reattach_initial_delay: int = 10
+    reattach_per_player_delay: int = 3
+    reattach_settle_delay: int = 2
+    rest_request_timeout: int = 15
+    ws_handshake_timeout: int = 10
+
+    @classmethod
+    def from_value(cls, value: Optional[Union["NodeTimeouts", Dict[str, int]]] = None) -> "NodeTimeouts":
+        if value is None:
+            return cls()
+        if isinstance(value, cls):
+            return value
+        return cls(**{k: v for k, v in value.items() if k in cls.__dataclass_fields__})
+
 
 from .mongodb import MongoDBHandler
 from .language import LangHandler
@@ -353,7 +372,7 @@ async def dispatch_message(
         send_kwargs["view"] = view
         
     if "delete_after" in send_func.__code__.co_varnames:
-        if delete_after is discord.utils.MISSING and settings and ctx.channel.id == settings.get("music_request_channel", {}).get("text_channel_id"):
+        if delete_after is discord.utils.MISSING and not ephemeral and settings and ctx.channel.id == settings.get("music_request_channel", {}).get("text_channel_id"):
             delete_after = 10
         send_kwargs["delete_after"] = delete_after if delete_after is not discord.utils.MISSING else None
     

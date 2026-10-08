@@ -432,7 +432,7 @@ class Basic(commands.Cog):
             return await send_localized_message(ctx, "player.errors.noPlayer", ephemeral=True)
 
         if not player.node._available:
-            return await send_localized_message(ctx, "player.errors.nodeReconnectode")
+            return await send_localized_message(ctx, "player.errors.nodeReconnect")
         
         if not player.is_privileged(ctx.author):
             if ctx.author in player.previous_votes:
@@ -800,7 +800,7 @@ class Basic(commands.Cog):
         await ctx.defer()
         lyrics_platform = voicelink.LYRICS_PLATFORMS.get(Config().lyrics_platform)
         if lyrics_platform:
-            lyrics = await lyrics_platform().get_lyrics(title, artist)
+            lyrics = await lyrics_platform().get_lyrics(title, artist, track=player.current if player else None)
             if not lyrics:
                 return await send_localized_message(ctx, "lyrics.notFound", ephemeral=True)
             

@@ -79,7 +79,7 @@ class Settings(commands.Cog, name="settings"):
     async def prefix(self, ctx: commands.Context, prefix: str):
         "Thay đổi prefix mặc định cho lệnh tin nhắn."
         if not self.bot.intents.message_content:
-            return await send_localized_message(ctx, "common.error.missingIntents", "MESSAGE_CONTENT", ephemeral=True)
+            return await send_localized_message(ctx, "common.errors.missingIntents", "MESSAGE_CONTENT", ephemeral=True)
         
         await MongoDBHandler.update_settings(ctx.guild.id, {"$set": {"prefix": prefix}})
         await send_localized_message(ctx, "settings.actions.prefixSet", prefix, prefix)
@@ -284,7 +284,7 @@ class Settings(commands.Cog, name="settings"):
     async def setupchannel(self, ctx: commands.Context, channel: discord.TextChannel = None) -> None:
         "Thiết lập kênh chuyên dụng cho yêu cầu bài hát trong máy chủ."
         if not self.bot.intents.message_content:
-            return await send_localized_message(ctx, "common.error.missingIntents", "MESSAGE_CONTENT", ephemeral=True)
+            return await send_localized_message(ctx, "common.errors.missingIntents", "MESSAGE_CONTENT", ephemeral=True)
         
         if not channel:
             try:

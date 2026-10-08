@@ -377,6 +377,24 @@ async def _getPlaylist(user_id: int, playlist_id: str) -> Dict:
 
     return playlist
 
+async def _getEditablePlaylist(user_id: int, playlist_id: str, perm: str) -> Optional[tuple]:
+    """Return (owner_id, owner_playlist_id, playlist) if user can edit with `perm` (write/remove)."""
+    entry = (await MongoDBHandler.get_user(user_id, d_type="playlist")).get(playlist_id)
+    if not entry or entry["type"] == "link":
+        return None
+
+    if entry["type"] == "share":
+        owner_id, owner_playlist_id = entry["user"], entry["referId"]
+        playlist = (await MongoDBHandler.get_user(owner_id, d_type="playlist")).get(owner_playlist_id)
+        if not playlist or user_id not in playlist.get("perms", {}).get(perm, []):
+            return None
+    else:
+        owner_id, owner_playlist_id, playlist = user_id, playlist_id, entry
+
+    playlist = dict(playlist)
+    playlist["tracks"] = await _loadPlaylist(playlist)
+    return owner_id, owner_playlist_id, playlist
+
 async def getPlaylist(bot: commands.Bot, data: Dict) -> Dict:
     user_id = int(data.get("userId"))
     playlist_id = str(data.get("playlistId"))

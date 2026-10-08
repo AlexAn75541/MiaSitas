@@ -28,7 +28,9 @@
             "resume": "繼續",
             "skip": "下一首",
             "leave": "離開",
-            "loop": "循環",
+            "loopOff": "關閉",
+            "loopTrack": "音軌",
+            "loopQueue": "隊列",
             "volumeUp": "音量+",
             "volumeDown": "音量-",
             "volumeMute": "靜音",
@@ -207,6 +209,15 @@
         "inbox": {
             "full": "抱歉！{0} 的收件匣已滿。",
             "noMessages": "您的收件匣中沒有訊息。"
+        },
+        "permissions": {
+            "granted": "已授予 {0} 對播放清單 [`{2}`] 的 **{1}** 權限。",
+            "revoked": "已撤銷 {0} 對播放清單 [`{2}`] 的 **{1}** 權限。",
+            "alreadyGranted": "{0} 已擁有此播放清單的 **{1}** 權限。",
+            "notGranted": "{0} 沒有此播放清單的 **{1}** 權限。",
+            "cannotModifySelf": "您不能修改自己的權限。",
+            "invalidPermission": "無效的權限類型。必須是：read、write 或 remove。",
+            "invalidAction": "無效的操作。必須是：grant 或 revoke。"
         }
     },
     "search": {

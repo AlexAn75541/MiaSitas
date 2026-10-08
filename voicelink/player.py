@@ -70,8 +70,13 @@ async def connect_channel(ctx: Union[commands.Context, Interaction], channel: Vo
     except:
         raise VoicelinkException(texts[0])
 
-    check = channel.permissions_for(ctx.guild.me)
-    if check.connect == False or check.speak == False:
+    bot_perms = channel.permissions_for(ctx.guild.me)
+    if not bot_perms.connect or not bot_perms.speak:
+        raise VoicelinkException(texts[1])
+
+    is_full = channel.user_limit > 0 and len(channel.members) >= channel.user_limit
+    can_bypass = bot_perms.administrator or bot_perms.move_members
+    if is_full and not can_bypass:
         raise VoicelinkException(texts[1])
 
     settings = await MongoDBHandler.get_settings(channel.guild.id)
@@ -560,6 +565,17 @@ class Player(VoiceProtocol):
             search_type = Config().search_platform
             
         return await self._node.get_tracks(query, requester=requester, search_type=search_type)
+
+    async def get_lyrics(self, track: Track = None, skip_track_source: bool = False) -> Optional[Dict]:
+        """Fetch lyrics via the LavaLyrics plugin for a track (defaults to current).
+
+        GET /v4/lyrics?track={encodedTrack}
+        Docs: https://github.com/topi314/LavaLyrics
+        """
+        track = track or self.current
+        if not track:
+            return None
+        return await self._node.send(RequestMethod.GET, f"lyrics?track={track.track_id}&skipTrackSource={skip_track_source}")
 
     async def connect(self, *, timeout: float, reconnect: bool, self_deaf: bool = True, self_mute: bool = False):
         """Connects the player to a voice channel."""

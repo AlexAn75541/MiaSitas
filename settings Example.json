@@ -18,12 +18,24 @@
                     "max_requests": 30
                 },
                 "strategy": "LoadBalance"
+            },
+            "reconnect_strategy": "ReconnectOnDrop",
+            "timeouts": {
+                "reattach_initial_delay": 10,
+                "reattach_per_player_delay": 3,
+                "reattach_settle_delay": 2,
+                "rest_request_timeout": 15,
+                "ws_handshake_timeout": 10
             }
-        }   
+        }
     },
     "prefix": "?",
     "activity": [
-        {"type": "listening", "name": "/help", "status": "online"}
+        {
+            "type": "listening",
+            "name": "/help",
+            "status": "online"
+        }
     ],
     "logging": {
         "file": {
@@ -35,10 +47,10 @@
             "vocard": "INFO",
             "ipc_client": "INFO"
         },
-        "max-history": 30
+        "max_history": 30
     },
     "bot_access_user": [],
-    "embed_color":"0xb3b3b3",
+    "embed_color": "0xb3b3b3",
     "default_max_queue": 1000,
     "default_search_platform": "youtube",
     "lyrics_platform": "lrclib",
@@ -49,15 +61,15 @@
         "secure": false,
         "enable": false
     },
-        "timer_settings": {
+    "timer_settings": {
         "bot_activity_update": 600,
         "inactive_player_cleanup": 600,
         "cache_cleanup": 43200
     },
     "playlist_settings": {
-        "max_playlist": 5,
         "max_tracks_per_playlist": 500,
-        "default_playlist_name": "Favourite"
+        "default_playlist_name": "Favourite",
+        "max_playlists": 5
     },
     "sources_settings": {
         "youtube": {
@@ -170,14 +182,29 @@
     },
     "default_voice_status_template": "{{@@track_name@@ != 'None' ?? @@track_source_emoji@@ Now Playing: @@track_name@@ // Waiting for song requests}}",
     "cooldowns": {
-        "connect": [2, 30],
-        "playlist view": [1, 30]
+        "connect": [
+            2,
+            30
+        ],
+        "playlist view": [
+            1,
+            30
+        ]
     },
     "aliases": {
-        "connect": ["join"],
-        "leave": ["stop", "bye"],
-        "play": ["p"],
-        "view": ["v"]
+        "connect": [
+            "join"
+        ],
+        "leave": [
+            "stop",
+            "bye"
+        ],
+        "play": [
+            "p"
+        ],
+        "view": [
+            "v"
+        ]
     },
     "features": {
         "music": true,
@@ -187,5 +214,6 @@
     },
     "disabled_commands": [],
     "disabled_channels": [],
-    "version": "v2.7.1"
+    "version": "v2.7.1",
+    "musixmatch_token": "YOUR_MUSIXMATCH_API_KEY"
 }
